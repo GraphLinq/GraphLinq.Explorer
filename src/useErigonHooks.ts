@@ -1,0 +1,1120 @@
+import { useState, useEffect, useMemo } from "react";
+import {
+  Block,
+  BlockWithTransactions,
+  BlockTag,
+} from "@ethersproject/abstract-provider";
+import { JsonRpcProvider, TransactionResponse } from "@ethersproject/providers";
+import { getAddress } from "@ethersproject/address";
+import { Contract } from "@ethersproject/contracts";
+import { defaultAbiCoder } from "@ethersproject/abi";
+import { BigNumber } from "@ethersproject/bignumber";
+import { arrayify, hexDataSlice, isHexString } from "@ethersproject/bytes";
+import { AddressZero } from "@ethersproject/constants";
+import useSWR, { Fetcher } from "swr";
+import useSWRImmutable from "swr/immutable";
+import {
+  TokenTransfer,
+  TransactionData,
+  InternalOperation,
+  ProcessedTransaction,
+  OperationType,
+  ChecksummedAddress,
+  TokenMeta,
+} from "./types";
+import erc20 from "./erc20.json";
+import erc721md from "./erc721metadata.json";
+import { rawToProcessed } from "./search/search";
+import { BlockHeader } from '@ethereumjs/block';
+
+const TRANSFER_TOPIC =
+  "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
+
+export interface ExtendedBlock extends Block {
+  blockReward: BigNumber;
+  unclesReward: BigNumber;
+  feeReward: BigNumber;
+  size: number;
+  sha3Uncles: string;
+  stateRoot: string;
+  totalDifficulty: BigNumber;
+  transactionCount: number;
+}
+
+const parseBigInt = (str: string, base = 16) => {
+  let strN = str.replace('0x', '');
+  let num = 0n;
+  let base2 = BigInt(base);
+  for (const digit of strN) {
+      num *= base2;
+      num += BigInt(parseInt(digit, 16));
+  }
+  return num.toString();
+}
+
+export const readBlock = async (
+  provider: JsonRpcProvider,
+  blockNumberOrHash: string
+): Promise<ExtendedBlock | null> => {
+  let blockPromise: Promise<any>;
+  if (isHexString(blockNumberOrHash, 32)) {
+    blockPromise = provider.send("eth_getBlockByHash", [
+      blockNumberOrHash, true
+    ]);
+  } else {
+    const blockNumber = parseInt(blockNumberOrHash);
+    if (isNaN(blockNumber) || blockNumber < 0) {
+      return null;
+    }
+    blockPromise = provider.send("eth_getBlockByNumber", [`0x${blockNumber.toString(16)}`, true]);
+  }
+
+  const _rawBlock = await blockPromise;
+
+  if (_rawBlock === null) {
+    return null;
+  }
+  const _block = _rawBlock;
+
+  const extBlock: ExtendedBlock = {
+    ..._block,
+    blockReward: provider.formatter.bigNumber('5000000000000000000'),
+    unclesReward: provider.formatter.bigNumber(0),
+    feeReward: provider.formatter.bigNumber(0),
+    size: provider.formatter.number(parseBigInt(_rawBlock.size)),
+    gasLimit: parseBigInt(_rawBlock.gasLimit).toString(),
+    gasUsed: parseBigInt(_rawBlock.gasUsed).toString(),
+    number: parseBigInt(_rawBlock.number),
+    _difficulty: parseBigInt(_rawBlock.difficulty),
+    sha3Uncles: _rawBlock.sha3Uncles,
+    stateRoot: _rawBlock.stateRoot,
+    totalDifficulty: provider.formatter.bigNumber(
+      parseBigInt(_rawBlock.difficulty)
+    ),
+    transactionCount: provider.formatter.number(
+      _rawBlock.transactions.length
+    ),
+    timestamp: parseInt(`${_rawBlock.timestamp}`.replace('0x', ''), 16),
+    miner: _rawBlock.miner
+  };
+  return extBlock;
+};
+
+export const useBlockTransactions = (
+  provider: JsonRpcProvider | undefined,
+  blockNumber: number,
+  pageNumber: number,
+  pageSize: number
+): [number | undefined, ProcessedTransaction[] | undefined] => {
+  const [totalTxs, setTotalTxs] = useState<number>();
+  const [txs, setTxs] = useState<ProcessedTransaction[]>();
+
+  useEffect(() => {
+    if (!provider) {
+      return;
+    }
+
+    const readBlock = async () => {
+      let block = await provider.send("eth_getBlockByNumber", [`0x${blockNumber.toString(16)}`, true]);
+      const _block = block as any;
+
+      setTotalTxs(block.transactions.length);
+
+      for (let i = 0; i < _block.transactions.length; i++) {
+        let _receipt = await provider.getTransactionReceipt(_block.transactions[i].hash);
+
+        _block.transactions[i].receipt =  provider.formatter.receipt(_receipt);      
+      }
+
+      const rawTxs = _block.transactions
+        .map((t: any, i: number) => {
+
+          return {
+            blockNumber: blockNumber,
+            timestamp: block.timestamp,
+            miner: block.miner,
+            idx: i,
+            hash: t.hash,
+            from: t.from,
+            to: t.to ?? null,
+            createdContractAddress: t.receipt.contractAddress,
+            value: provider.formatter
+            .bigNumber(parseBigInt(t.value)),
+            fee: provider.formatter
+              .bigNumber(parseBigInt(t.receipt.gasUsed.toString()))
+              .mul(parseBigInt(t.gasPrice)),
+            gasPrice: provider.formatter
+            .bigNumber(parseBigInt(t.gasPrice)),
+            data: "",
+            status: t.receipt.status
+          };
+        })
+        .reverse();
+      setTxs(rawTxs)
+    };
+    readBlock();
+  }, [provider, blockNumber, pageNumber, pageSize]);
+
+  return [totalTxs, txs];
+};
+
+const blockDataFetcher: Fetcher<
+  ExtendedBlock | null,
+  [JsonRpcProvider, string]
+> = async ([provider, blockNumberOrHash]) => {
+  return readBlock(provider, blockNumberOrHash);
+};
+
+// TODO: some callers may use only block headers?
+export const useBlockData = (
+  provider: JsonRpcProvider | undefined,
+  blockNumberOrHash: string | undefined
+): ExtendedBlock | null | undefined => {
+  const { data, error } = useSWRImmutable(
+    provider !== undefined && blockNumberOrHash !== undefined
+      ? [provider, blockNumberOrHash]
+      : null,
+    blockDataFetcher
+  );
+  if (error) {
+    return undefined;
+  }
+  return data;
+};
+
+export const useBlockDataFromTransaction = (
+  provider: JsonRpcProvider | undefined,
+  txData: TransactionData | null | undefined
+): ExtendedBlock | null | undefined => {
+  const block = useBlockData(
+    provider,
+    txData?.confirmedData
+      ? txData.confirmedData.blockNumber.toString()
+      : undefined
+  );
+  return block;
+};
+
+export const useTxData = (
+  provider: JsonRpcProvider | undefined,
+  txhash: string
+): TransactionData | undefined | null => {
+  const [txData, setTxData] = useState<TransactionData | undefined | null>();
+
+  useEffect(() => {
+    if (!provider) {
+      return;
+    }
+
+    const readTxData = async () => {
+      try {
+        const [_response, _receipt] = await Promise.all([
+          provider.getTransaction(txhash),
+          provider.getTransactionReceipt(txhash),
+        ]);
+        if (_response === null) {
+          setTxData(null);
+          return;
+        }
+
+        setTxData({
+          transactionHash: _response.hash,
+          from: _response.from,
+          to: _response.to,
+          value: _response.value,
+          type: _response.type ?? 0,
+          maxFeePerGas: _response.maxFeePerGas,
+          maxPriorityFeePerGas: _response.maxPriorityFeePerGas,
+          gasPrice: _response.gasPrice!,
+          gasLimit: _response.gasLimit,
+          nonce: _response.nonce,
+          data: _response.data,
+          confirmedData:
+            _receipt === null
+              ? undefined
+              : {
+                  status: _receipt.status === 1,
+                  blockNumber: _receipt.blockNumber,
+                  transactionIndex: _receipt.transactionIndex,
+                  confirmations: _receipt.confirmations,
+                  createdContractAddress: _receipt.contractAddress,
+                  fee: _response.gasPrice!.mul(_receipt.gasUsed),
+                  gasUsed: _receipt.gasUsed,
+                  logs: _receipt.logs,
+                },
+        });
+      } catch (err) {
+        console.error(err);
+        setTxData(null);
+      }
+    };
+
+    readTxData();
+  }, [provider, txhash]);
+
+  return txData;
+};
+
+export const useTokenTransfers = (
+  txData: TransactionData
+): TokenTransfer[] | undefined => {
+  const transfers = useMemo(() => {
+    if (!txData.confirmedData) {
+      return undefined;
+    }
+
+    return txData.confirmedData.logs
+      .filter((l) => l.topics.length === 3 && l.topics[0] === TRANSFER_TOPIC)
+      .map((l) => ({
+        token: l.address,
+        from: getAddress(hexDataSlice(arrayify(l.topics[1]), 12)),
+        to: getAddress(hexDataSlice(arrayify(l.topics[2]), 12)),
+        value: BigNumber.from(l.data),
+      }));
+  }, [txData]);
+
+  return transfers;
+};
+
+export const useInternalOperations = (
+  provider: JsonRpcProvider | undefined,
+  txHash: string | undefined
+): InternalOperation[] | undefined => {
+  const { data, error } = useSWRImmutable(
+    provider !== undefined && txHash !== undefined
+      ? ["ots_getInternalOperations", txHash]
+      : null,
+    providerFetcher(provider)
+  );
+
+  const _transfers = useMemo(() => {
+    if (provider === undefined || error || data === undefined) {
+      return undefined;
+    }
+
+    const _t: InternalOperation[] = [];
+    for (const t of data) {
+      _t.push({
+        type: t.type,
+        from: provider.formatter.address(getAddress(t.from)),
+        to: provider.formatter.address(getAddress(t.to)),
+        value: provider.formatter.bigNumber(t.value),
+      });
+    }
+    return _t;
+  }, [provider, data]);
+  return _transfers;
+};
+
+export const useSendsToMiner = (
+  provider: JsonRpcProvider | undefined,
+  txHash: string | undefined,
+  miner: string | undefined
+): [boolean, InternalOperation[]] | [undefined, undefined] => {
+  const ops = useInternalOperations(provider, txHash);
+  if (ops === undefined) {
+    return [undefined, undefined];
+  }
+
+  const send =
+    ops.findIndex(
+      (op) =>
+        op.type === OperationType.TRANSFER &&
+        miner !== undefined &&
+        miner === getAddress(op.to)
+    ) !== -1;
+  return [send, ops];
+};
+
+export type TraceEntry = {
+  type: string;
+  depth: number;
+  from: string;
+  to: string;
+  value: BigNumber;
+  input: string;
+};
+
+export type TraceGroup = TraceEntry & {
+  children: TraceGroup[] | null;
+};
+
+export const useTraceTransaction = (
+  provider: JsonRpcProvider | undefined,
+  txHash: string
+): TraceGroup[] | undefined => {
+  const [traceGroups, setTraceGroups] = useState<TraceGroup[] | undefined>();
+
+  useEffect(() => {
+    if (!provider) {
+      setTraceGroups(undefined);
+      return;
+    }
+
+    const traceTx = async () => {
+      const results = await provider.send("ots_traceTransaction", [txHash]);
+
+      // Implement better formatter
+      for (let i = 0; i < results.length; i++) {
+        results[i].from = provider.formatter.address(results[i].from);
+        results[i].to = provider.formatter.address(results[i].to);
+        results[i].value =
+          results[i].value === null
+            ? null
+            : provider.formatter.bigNumber(results[i].value);
+      }
+
+      // Build trace tree
+      const buildTraceTree = (
+        flatList: TraceEntry[],
+        depth: number = 0
+      ): TraceGroup[] => {
+        const entries: TraceGroup[] = [];
+
+        let children: TraceEntry[] | null = null;
+        for (let i = 0; i < flatList.length; i++) {
+          if (flatList[i].depth === depth) {
+            if (children !== null) {
+              const childrenTree = buildTraceTree(children, depth + 1);
+              const prev = entries.pop();
+              if (prev) {
+                prev.children = childrenTree;
+                entries.push(prev);
+              }
+            }
+
+            entries.push({
+              ...flatList[i],
+              children: null,
+            });
+            children = null;
+          } else {
+            if (children === null) {
+              children = [];
+            }
+            children.push(flatList[i]);
+          }
+        }
+        if (children !== null) {
+          const childrenTree = buildTraceTree(children, depth + 1);
+          const prev = entries.pop();
+          if (prev) {
+            prev.children = childrenTree;
+            entries.push(prev);
+          }
+        }
+
+        return entries;
+      };
+
+      const traceTree = buildTraceTree(results);
+      setTraceGroups(traceTree);
+    };
+    traceTx();
+  }, [provider, txHash]);
+
+  return traceGroups;
+};
+
+// Error(string)
+const ERROR_MESSAGE_SELECTOR = "0x08c379a0";
+
+export const useTransactionError = (
+  provider: JsonRpcProvider | undefined,
+  txHash: string
+): [string | undefined, string | undefined, boolean | undefined] => {
+  const [errorMsg, setErrorMsg] = useState<string | undefined>();
+  const [data, setData] = useState<string | undefined>();
+  const [isCustomError, setCustomError] = useState<boolean | undefined>();
+
+  useEffect(() => {
+    // Reset
+    setErrorMsg(undefined);
+    setData(undefined);
+    setCustomError(undefined);
+
+    if (provider === undefined) {
+      return;
+    }
+
+    // const readCodes = async () => {
+    //   const result = (await provider.send("ots_getTransactionError", [
+    //     txHash,
+    //   ])) as string;
+
+    //   // Empty or success
+    //   if (result === "0x") {
+    //     setErrorMsg(undefined);
+    //     setData(result);
+    //     setCustomError(false);
+    //     return;
+    //   }
+
+    //   // Filter hardcoded Error(string) selector because ethers don't let us
+    //   // construct it
+    //   const selector = result.substr(0, 10);
+    //   if (selector === ERROR_MESSAGE_SELECTOR) {
+    //     const msg = defaultAbiCoder.decode(
+    //       ["string"],
+    //       "0x" + result.substr(10)
+    //     );
+    //     setErrorMsg(msg[0]);
+    //     setData(result);
+    //     setCustomError(false);
+    //     return;
+    //   }
+
+    //   setErrorMsg(undefined);
+    //   setData(result);
+    //   setCustomError(true);
+    // };
+    // readCodes();
+  }, [provider, txHash]);
+
+  return [errorMsg, data, isCustomError];
+};
+
+export const useTransactionCount = (
+  provider: JsonRpcProvider | undefined,
+  sender: ChecksummedAddress | undefined
+): number | undefined => {
+  const { data, error } = useSWR(
+    provider && sender ? { provider, sender } : null,
+    async ({ provider, sender }): Promise<number | undefined> =>
+      provider.getTransactionCount(sender)
+  );
+
+  if (error) {
+    return undefined;
+  }
+  return data;
+};
+
+type TransactionBySenderAndNonceKey = {
+  network: number;
+  sender: ChecksummedAddress;
+  nonce: number;
+};
+
+const getTransactionBySenderAndNonceFetcher =
+  (provider: JsonRpcProvider) =>
+  async ({
+    network,
+    sender,
+    nonce,
+  }: TransactionBySenderAndNonceKey): Promise<string | null | undefined> => {
+    if (nonce < 0) {
+      return undefined;
+    }
+
+    const result = (await provider.send("ots_getTransactionBySenderAndNonce", [
+      sender,
+      nonce,
+    ])) as string;
+
+    // Empty or success
+    return result;
+  };
+
+export const useTransactionBySenderAndNonce = (
+  provider: JsonRpcProvider | undefined,
+  sender: ChecksummedAddress | undefined,
+  nonce: number | undefined
+): string | null | undefined => {
+  const { data, error } = useSWR<
+    string | null | undefined,
+    any,
+    TransactionBySenderAndNonceKey | null
+  >(
+    provider && sender && nonce !== undefined
+      ? {
+          network: provider.network.chainId,
+          sender,
+          nonce,
+        }
+      : null,
+    getTransactionBySenderAndNonceFetcher(provider!)
+  );
+
+  if (error) {
+    return undefined;
+  }
+  return data;
+};
+
+type ContractCreatorKey = {
+  type: "cc";
+  network: number;
+  address: ChecksummedAddress;
+};
+
+type ContractCreator = {
+  hash: string;
+  creator: ChecksummedAddress;
+};
+
+export const useContractCreator = (
+  provider: JsonRpcProvider | undefined,
+  address: ChecksummedAddress | undefined
+): ContractCreator | null | undefined => {
+  const { data, error } = useSWR<
+    ContractCreator | null | undefined,
+    any,
+    ContractCreatorKey | null
+  >(
+    provider && address
+      ? {
+          type: "cc",
+          network: provider.network.chainId,
+          address,
+        }
+      : null,
+    getContractCreatorFetcher(provider!)
+  );
+
+  if (error) {
+    return undefined;
+  }
+  return data as ContractCreator;
+};
+
+const getContractCreatorFetcher =
+  (provider: JsonRpcProvider) =>
+  async ({
+    network,
+    address,
+  }: ContractCreatorKey): Promise<ContractCreator | null | undefined> => {
+    const result = (await provider.send("eth_getContractCreator", [
+      address,
+    ])) as ContractCreator;
+
+    // Empty or success
+    if (result) {
+      result.creator = provider.formatter.address(result.creator);
+    }
+    return result;
+  };
+
+export const useAddressBalance = (
+  provider: JsonRpcProvider | undefined,
+  address: ChecksummedAddress | undefined
+): BigNumber | null | undefined => {
+  const [balance, setBalance] = useState<BigNumber | undefined>();
+
+  useEffect(() => {
+    if (!provider || !address) {
+      return undefined;
+    }
+
+    const readBalance = async () => {
+      const _balance = await provider.getBalance(address);
+      setBalance(_balance);
+    };
+    readBalance();
+  }, [provider, address]);
+
+  return balance;
+};
+
+/**
+ * This is a generic fetch for SWR, where the key is an array, whose
+ * element 0 is the JSON-RPC method, and the remaining are the method
+ * arguments.
+ */
+export const providerFetcher =
+  (provider: JsonRpcProvider | undefined): Fetcher<any | undefined, any[]> =>
+  async (key) => {
+    if (provider === undefined) {
+      return undefined;
+    }
+    for (const a of key) {
+      if (a === undefined) {
+        return undefined;
+      }
+    }
+
+    const method = key[0];
+    const args = key.slice(1);
+    const result = await provider.send(method, args);
+    return result;
+  };
+
+export const useHasCode = (
+  provider: JsonRpcProvider | undefined,
+  address: ChecksummedAddress | undefined,
+  blockTag: BlockTag = "latest"
+): boolean | undefined => {
+  const fetcher = providerFetcher(provider);
+  const { data, error } = useSWRImmutable(
+    ["ots_hasCode", address, blockTag],
+    fetcher
+  );
+  if (error) {
+    return undefined;
+  }
+  return data as boolean | undefined;
+};
+
+const ERC20_PROTOTYPE = new Contract(AddressZero, erc20);
+
+const tokenMetadataFetcher =
+  (
+    provider: JsonRpcProvider | undefined
+  ): Fetcher<TokenMeta | null, ["tokenmeta", ChecksummedAddress]> =>
+  async ([_, address]) => {
+    if (provider === undefined) {
+      return null;
+    }
+
+    const erc20Contract = ERC20_PROTOTYPE.connect(provider).attach(address);
+    try {
+      const name = (await erc20Contract.name()) as string;
+      if (!name.trim()) {
+        return null;
+      }
+
+      const [symbol, decimals] = (await Promise.all([
+        erc20Contract.symbol(),
+        erc20Contract.decimals(),
+      ])) as [string, number];
+
+      // Prevent faulty tokens with empty name/symbol
+      if (!symbol.trim()) {
+        return null;
+      }
+
+      return {
+        name,
+        symbol,
+        decimals,
+      };
+    } catch (err) {
+      // Ignore on purpose; this indicates the probe failed and the address
+      // is not a token
+      return null;
+    }
+  };
+
+export const useTokenMetadata = (
+  provider: JsonRpcProvider | undefined,
+  address: ChecksummedAddress | undefined
+): TokenMeta | null | undefined => {
+  const fetcher = tokenMetadataFetcher(provider);
+  const { data, error } = useSWRImmutable(
+    provider !== undefined && address !== undefined
+      ? ["tokenmeta", address]
+      : null,
+    fetcher
+  );
+  if (error) {
+    return undefined;
+  }
+  return data;
+};
+
+// TODO: fix json names on erigon return
+export type ContractMatch = {
+  blockNumber: number;
+  address: string;
+};
+
+export type TransactionMatch = {
+  hash: string;
+};
+
+const useGenericContractList = (
+  provider: JsonRpcProvider | undefined,
+  rpcMethod: string,
+  pageNumber: number,
+  pageSize: number
+): ContractMatch[] | undefined => {
+  const fetcher = providerFetcher(provider);
+  const { data, error } = useSWRImmutable(
+    [rpcMethod, pageSize, pageNumber - 1],
+    fetcher
+  );
+  if (error) {
+    return undefined;
+  }
+
+  if (data === undefined) {
+    return undefined;
+  }
+  const converted = (data as any[]).map((m) => {
+    const c: ContractMatch = {
+      blockNumber: BigNumber.from(m.Block).toNumber(),
+      address: m.Address,
+    };
+    return c;
+  });
+  return converted;
+};
+
+const useGenericContractCount = (
+  provider: JsonRpcProvider | undefined,
+  rpcMethod: string
+): number | undefined => {
+  const fetcher = providerFetcher(provider);
+  const { data, error } = useSWRImmutable([rpcMethod], fetcher);
+  if (error) {
+    return undefined;
+  }
+  return data as number | undefined;
+};
+
+export const useContractsCount = (
+  provider: JsonRpcProvider | undefined
+): number | undefined => {
+  return useGenericContractCount(provider, "ots_getAllContractsCount");
+};
+
+export const useContractsList = (
+  provider: JsonRpcProvider | undefined,
+  pageNumber: number,
+  pageSize: number
+): ContractMatch[] | undefined => {
+  return useGenericContractList(
+    provider,
+    "ots_getAllContractsPage",
+    pageNumber,
+    pageSize
+  );
+};
+
+export const useERC20Count = (
+  provider: JsonRpcProvider | undefined
+): number | undefined => {
+  return useGenericContractCount(provider, "ots_getERC20Count");
+};
+
+export const useERC20List = (
+  provider: JsonRpcProvider | undefined,
+  pageNumber: number,
+  pageSize: number
+): ContractMatch[] | undefined => {
+  return useGenericContractList(
+    provider,
+    "ots_getERC20Page",
+    pageNumber,
+    pageSize
+  );
+};
+
+export const useERC721Count = (
+  provider: JsonRpcProvider | undefined
+): number | undefined => {
+  return useGenericContractCount(provider, "ots_getERC721Count");
+};
+
+export const useERC721List = (
+  provider: JsonRpcProvider | undefined,
+  pageNumber: number,
+  pageSize: number
+): ContractMatch[] | undefined => {
+  return useGenericContractList(
+    provider,
+    "ots_getERC721Page",
+    pageNumber,
+    pageSize
+  );
+};
+
+export const useERC1155Count = (
+  provider: JsonRpcProvider | undefined
+): number | undefined => {
+  return useGenericContractCount(provider, "ots_getERC1155Count");
+};
+
+export const useERC1155List = (
+  provider: JsonRpcProvider | undefined,
+  pageNumber: number,
+  pageSize: number
+): ContractMatch[] | undefined => {
+  return useGenericContractList(
+    provider,
+    "ots_getERC1155Page",
+    pageNumber,
+    pageSize
+  );
+};
+
+const useGenericTransactionCount = (
+  provider: JsonRpcProvider | undefined,
+  rpcMethod: string,
+  address: ChecksummedAddress
+): number | undefined => {
+  const fetcher = providerFetcher(provider);
+  const { data, error } = useSWRImmutable([rpcMethod, address], fetcher);
+  if (error) {
+    return undefined;
+  }
+  return data as number | undefined;
+};
+
+const useGenericTransactionList = (
+  provider: JsonRpcProvider | undefined,
+  rpcMethod: string,
+  address: ChecksummedAddress,
+  pageNumber: number,
+  pageSize: number
+): TransactionMatch[] | undefined => {
+  const fetcher = providerFetcher(provider);
+  const { data, error } = useSWRImmutable(
+    [rpcMethod, address, pageNumber - 1, pageSize],
+    fetcher
+  );
+  if (error) {
+    return undefined;
+  }
+
+  if (data === undefined) {
+    return undefined;
+  }
+  const converted = (data as any[]).map((m) => {
+    const t: TransactionMatch = {
+      hash: m.hash,
+    };
+    return t;
+  });
+  return converted;
+};
+
+export const useERC20TransferCount = (
+  provider: JsonRpcProvider | undefined,
+  address: ChecksummedAddress
+): number | undefined => {
+  return useGenericTransactionCount(
+    provider,
+    "ots_getERC20TransferCount",
+    address
+  );
+};
+
+export const useERC20TransferList = (
+  provider: JsonRpcProvider | undefined,
+  address: ChecksummedAddress,
+  pageNumber: number,
+  pageSize: number
+): TransactionMatch[] | undefined => {
+  return useGenericTransactionList(
+    provider,
+    "ots_getERC20TransferPage",
+    address,
+    pageNumber,
+    pageSize
+  );
+};
+
+// TODO: remove temporary prototype
+export const useTransactionsWithReceipts = (
+  provider: JsonRpcProvider | undefined,
+  hash: string[] | undefined
+): ProcessedTransaction[] | undefined => {
+  const fetcher = providerFetcher(provider);
+  const { data, error } = useSWRImmutable(
+    hash === undefined ? null : ["ots_getTransactionsWithReceipts", hash],
+    fetcher
+  );
+  if (error) {
+    return undefined;
+  }
+
+  if (!provider || data === undefined) {
+    return undefined;
+  }
+  const converted = rawToProcessed(provider, data);
+  return converted.txs;
+};
+
+const ERC721MD_PROTOTYPE = new Contract(AddressZero, erc721md);
+
+const erc721MetadataFetcher =
+  (
+    provider: JsonRpcProvider | undefined
+  ): Fetcher<
+    ERC721Metadata | null,
+    ["erc721meta", ChecksummedAddress, number]
+  > =>
+  async ([_, address, blockNumber]) => {
+    if (provider === undefined) {
+      return null;
+    }
+
+    const contract = ERC721MD_PROTOTYPE.connect(provider).attach(address);
+    try {
+      const [name, symbol] = await Promise.allSettled([
+        contract.name({ blockTag: blockNumber + 1 }),
+        contract.symbol({ blockTag: blockNumber + 1 }),
+      ]);
+
+      return {
+        name: name.status === "fulfilled" ? (name.value as string) : "",
+        symbol: symbol.status === "fulfilled" ? (symbol.value as string) : "",
+      };
+    } catch (err) {
+      // Ignore on purpose; this indicates the probe failed and the address
+      // is not a token
+      return null;
+    }
+  };
+
+export type ERC721Metadata = {
+  name: string;
+  symbol: string;
+};
+
+export const useERC721Metadata = (
+  provider: JsonRpcProvider | undefined,
+  address: ChecksummedAddress | undefined,
+  blockNumber: number | undefined
+): ERC721Metadata | undefined | null => {
+  const fetcher = erc721MetadataFetcher(provider);
+  const { data, error } = useSWRImmutable(
+    provider !== undefined && address !== undefined && blockNumber !== undefined
+      ? ["erc721meta", address, blockNumber]
+      : null,
+    fetcher
+  );
+  if (error) {
+    return undefined;
+  }
+  return data;
+};
+
+const erc20MetadataFetcher =
+  (
+    provider: JsonRpcProvider | undefined
+  ): Fetcher<ERC20Metadata | null, ["erc20meta", ChecksummedAddress, number]> =>
+  async ([_, address, blockNumber]) => {
+    if (provider === undefined) {
+      return null;
+    }
+
+    const contract = ERC20_PROTOTYPE.connect(provider).attach(address);
+    try {
+      const [name, symbol, decimals] = await Promise.allSettled([
+        contract.name({ blockTag: blockNumber + 1 }),
+        contract.symbol({ blockTag: blockNumber + 1 }),
+        contract.decimals({ blockTag: blockNumber + 1 }),
+      ]);
+
+      return {
+        name: name.status === "fulfilled" ? (name.value as string) : "",
+        symbol: symbol.status === "fulfilled" ? (symbol.value as string) : "",
+        decimals:
+          decimals.status === "fulfilled"
+            ? (decimals.value as number)
+            : undefined,
+      };
+    } catch (err) {
+      // Ignore on purpose; this indicates the probe failed and the address
+      // is not a token
+      return null;
+    }
+  };
+
+export type ERC20Metadata = {
+  name: string;
+  symbol: string;
+  decimals: number | undefined;
+};
+
+export const useERC20Metadata = (
+  provider: JsonRpcProvider | undefined,
+  address: ChecksummedAddress | undefined,
+  blockNumber: number | undefined
+): ERC20Metadata | undefined | null => {
+  const fetcher = erc20MetadataFetcher(provider);
+  const { data, error } = useSWRImmutable(
+    provider !== undefined && address !== undefined && blockNumber !== undefined
+      ? ["erc20meta", address, blockNumber]
+      : null,
+    fetcher
+  );
+  if (error) {
+    return undefined;
+  }
+  return data;
+};
+
+export const useERC20Holdings = (
+  provider: JsonRpcProvider | undefined,
+  address: ChecksummedAddress
+): ChecksummedAddress[] | undefined => {
+  const fetcher = providerFetcher(provider);
+  const { data, error } = useSWR(["ots_getERC20Holdings", address], fetcher);
+  const converted = useMemo(() => {
+    if (error) {
+      return undefined;
+    }
+
+    if (data === undefined || data === null) {
+      return undefined;
+    }
+    return (data as any[]).map((m) => m.address);
+  }, [data, error]);
+
+  return converted;
+};
+
+const erc20BalanceFetcher =
+  (
+    provider: JsonRpcProvider | undefined
+  ): Fetcher<
+    BigNumber | null,
+    ["erc20balance", ChecksummedAddress, ChecksummedAddress]
+  > =>
+  async ([_, address, tokenAddress]) => {
+    if (provider === undefined) {
+      return null;
+    }
+
+    const contract = ERC20_PROTOTYPE.connect(provider).attach(tokenAddress);
+    return contract.balanceOf(address);
+  };
+
+export const useTokenBalance = (
+  provider: JsonRpcProvider | undefined,
+  address: ChecksummedAddress | undefined,
+  tokenAddress: ChecksummedAddress | undefined
+): BigNumber | null | undefined => {
+  const fetcher = erc20BalanceFetcher(provider);
+  const { data, error } = useSWR(
+    ["erc20balance", address, tokenAddress],
+    fetcher
+  );
+  if (error) {
+    return undefined;
+  }
+
+  if (data === undefined || data === null) {
+    return undefined;
+  }
+  return data;
+};
+
+export type AddressAttributes = {
+  erc20?: boolean;
+  erc165?: boolean;
+  erc721?: boolean;
+  erc1155?: boolean;
+};
+
+export const useAddressAttributes = (
+  provider: JsonRpcProvider | undefined,
+  address: ChecksummedAddress
+): AddressAttributes | undefined => {
+  const fetcher = providerFetcher(provider);
+  const { data, error } = useSWR(
+    ["ots_getAddressAttributes", address],
+    fetcher
+  );
+  if (error) {
+    return undefined;
+  }
+
+  if (data === undefined || data === null) {
+    return undefined;
+  }
+  return data;
+};

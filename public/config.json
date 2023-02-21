@@ -1,0 +1,5 @@
+{
+  "chainURL": "https://glq-dataseed.graphlinq.io",
+  "beaconAPI": "http://localhost:5052",
+  "assetsURLPrefix": "http://localhost:3001"
+}
