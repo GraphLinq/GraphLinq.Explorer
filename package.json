@@ -50,6 +50,7 @@
   "scripts": {
     "start": "vite",
     "build": "tsc && vite build",
+    "speed-build": "vite build",
     "preview": "vite preview",
     "test": "jest",
     "source-map-explorer": "source-map-explorer build/static/js/*.js",
