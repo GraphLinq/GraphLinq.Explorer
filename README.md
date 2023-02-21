@@ -10,7 +10,7 @@ git clone https://github.com/ethereum-lists/chains.git
 git clone https://github.com/wmitsuda/topic0.git
 git clone https://github.com/trustwallet/assets.git
 
-npm run start
+npm run start -- --port 5174
 ```
 
 ### Base Project
