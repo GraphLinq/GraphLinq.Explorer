@@ -7,6 +7,7 @@ import SourcifyMenu from "./SourcifyMenu";
 import { RuntimeContext } from "./useRuntime";
 import { useGenericSearch } from "./search/search";
 import Otter from "./otter.png";
+import { useLatestBlockHeader } from "./useLatestBlock";
 
 const CameraScanner = lazy(() => import("./search/CameraScanner"));
 
@@ -14,6 +15,8 @@ const Header: FC = () => {
   const { provider } = useContext(RuntimeContext);
   const [searchRef, handleChange, handleSubmit] = useGenericSearch();
   const [isScanning, setScanning] = useState<boolean>(false);
+
+  const latestBlock = useLatestBlockHeader(provider);
 
   return (
     <>
@@ -35,6 +38,10 @@ const Header: FC = () => {
           </div>
         </Link>
         <div className="flex items-baseline space-x-3">
+          <div>
+            {/* GAS PRICE GWEI */}
+            { latestBlock && <span className="text-sm text-gray-400" >Gas: {latestBlock.baseFeePerGas?.toString()} Gwei</span> }
+          </div>
           {provider?.network.chainId === 1 && <PriceBox />}
           <form
             className="flex"
