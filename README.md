@@ -10,14 +10,14 @@ git clone https://github.com/ethereum-lists/chains.git
 git clone https://github.com/wmitsuda/topic0.git
 git clone https://github.com/trustwallet/assets.git
 
-npm run start -- --port 5174
+npm install
 ```
 
 ### Developement
 
 Shell number 1 for front-end debug
 ```
-npm run start
+npm run start -- --port 5174
 ```
 
 Shell number 2 for backend debug
