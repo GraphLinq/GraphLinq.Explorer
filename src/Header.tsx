@@ -11,7 +11,7 @@ import { useLatestBlockHeader } from "./useLatestBlock";
 
 const CameraScanner = lazy(() => import("./search/CameraScanner"));
 
-const Header: FC = () => {
+const Header: FC<{hideLogo: boolean}> = ({ hideLogo }) => {
   const { provider } = useContext(RuntimeContext);
   const [searchRef, handleChange, handleSubmit] = useGenericSearch();
   const [isScanning, setScanning] = useState<boolean>(false);
@@ -23,7 +23,7 @@ const Header: FC = () => {
       {isScanning && <CameraScanner turnOffScan={() => setScanning(false)} />}
       <div className="flex items-baseline justify-between px-9 py-2">
         <Link className="self-center" to="/">
-          <div className="flex items-center space-x-2 font-title text-2xl font-bold text-link-blue">
+          { !hideLogo && <div className="flex items-center space-x-2 font-title text-2xl font-bold text-link-blue">
           <svg version="1.1" id="Calque_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 38.7 36.9" width={32}><linearGradient fill="#201B40" id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="19.1731" y1="36.9" x2="19.1731" y2="0"><stop offset="0"></stop><stop offset="1"></stop></linearGradient><path className="st0" d="M28.4,36.9L28.4,36.9h-16c-1.6,0-3.1-0.9-3.9-2.3L0.4,20.7c-0.8-1.4-0.8-3.1,0-4.4L8.5,2.2
           C9.3,0.8,10.7,0,12.3,0h16.1c1.6,0,3.2,0.9,4,2.3l5.8,10.1c0.1,0.1,0.1,0.3,0,0.4c0,0.1-0.1,0.2-0.2,0.3l-2,1.1
           c-2.1,1.2-4.8,0.5-6-1.6l-3.2-5.5h-6.4v22.7h6.4l3.3-5.7l-5.5-3.2c-1.1-0.6-1.8-1.8-1.8-3.1v-5.4c0-0.2,0.1-0.3,0.2-0.4
@@ -35,7 +35,7 @@ const Header: FC = () => {
           c-0.2,0-0.3-0.1-0.4-0.2L6.2,18.8c-0.1-0.2-0.1-0.4,0-0.6l6.9-11.8c0.1-0.2,0.3-0.3,0.6-0.2c0.2,0.1,0.4,0.3,0.4,0.5v23.7
           c0,0.2-0.2,0.4-0.4,0.5C13.6,30.8,13.5,30.8,13.5,30.8z M7.2,18.4l5.8,10V8.5C13,8.5,7.2,18.4,7.2,18.4z"></path></svg>
             <span>GraphLinq<sup>explorer</sup></span>
-          </div>
+          </div>}
         </Link>
         <div className="flex items-baseline space-x-3">
           <div>

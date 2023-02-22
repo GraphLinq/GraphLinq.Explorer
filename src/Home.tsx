@@ -43,7 +43,7 @@ const Home: FC = () => {
   return (
     <div className="flex grow flex-col">
       <AppConfigContext.Provider value={appConfig}>
-        <Header />
+        <Header hideLogo={true} />
         <Outlet />
       </AppConfigContext.Provider>
       <div className="flex grow flex-col items-center pb-5">
