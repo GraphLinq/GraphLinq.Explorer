@@ -63,7 +63,8 @@
     "docker-stop": "docker stop glqscan",
     "docker-clean-all": "docker system prune --all",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "server": "node http_server.js"
   },
   "eslintConfig": {
     "extends": [

@@ -1,7 +1,7 @@
 var fs = require('fs');
 var http = require('http');
 var url = require('url');
-var ROOT_DIR = "./";
+var ROOT_DIR = "./dist/";
 
 var mimeTypes ={
 	"js":"text/javascript",
@@ -10,14 +10,35 @@ var mimeTypes ={
 	"png":"image/png",
 	"jpg":"image/jpg",
 	"jpeg":"image/jpeg"
-}
+};
+
+let app = {};
+
+let routes = [... fs.readdirSync('./api/routes')]
+    .filter(x => !['example.js'].includes(x)  && x.endsWith('.js'))
+    .map(x => [x, require(`./api/routes/${x}`)])
+    .map(x => ({ name: x[0].replace('.js', ''), use: Object.values(x[1])[0], type: 'normal' }));
+
+[... routes].forEach(routeUseFunction => {
+	routeUseFunction.use(app);
+
+	let method = routeUseFunction.name.split('-', 1)[0];
+	let path = routeUseFunction.name.replace(`${method}-`, '');
+	console.log(`[Explorer - API] - ${method} - ${path}`);
+});
+
 http.createServer( function( req, res ) {
 	
 	var urlObj = url.parse( req.url, true, false );
 	var tmp  = urlObj.pathname.lastIndexOf(".");
 	var extension  = urlObj.pathname.substring((tmp + 1));
 
-	let filePath = urlObj.pathname;
+	let filePath = urlObj.pathname.replace('..', '');
+
+	if (app[filePath] != undefined) {
+		app[filePath](req, res);
+		return ;
+	}
 
 	if (filePath == undefined || filePath == '' || filePath == '/') {
 		filePath = 'index.html';

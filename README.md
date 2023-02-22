@@ -13,6 +13,21 @@ git clone https://github.com/trustwallet/assets.git
 npm run start -- --port 5174
 ```
 
+### Developement
+
+Shell number 1 for front-end debug
+```
+npm run start
+```
+
+Shell number 2 for backend debug
+```
+npm run server
+```
+
+Backend src api/routes directory.
+Frontend src src directory.
+
 ### Base Project
 
 [https://github.com/wmitsuda/otterscan](https://github.com/wmitsuda/otterscan)
