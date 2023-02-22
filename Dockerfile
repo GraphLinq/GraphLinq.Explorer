@@ -13,6 +13,6 @@ WORKDIR /app
 COPY --from=clone /clone/GraphLinq.Explorer/ .
 RUN npm install
 RUN npm run speed-build
-ADD ./http-server/http_server.js .dist/http_server.js
+ADD ./http-server/http_server.js ./dist/http_server.js
 WORKDIR /app/dist
 ENTRYPOINT ["node", "http_server.js"]

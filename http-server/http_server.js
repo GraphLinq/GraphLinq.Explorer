@@ -22,6 +22,9 @@ http.createServer( function( req, res ) {
 	if (filePath == undefined || filePath == '' || filePath == '/') {
 		filePath = 'index.html';
 	}
+	if (!fs.existsSync(ROOT_DIR + filePath)) {
+		filePath = 'index.html';
+	}
 	
 	fs.readFile( ROOT_DIR + filePath, function( err, data ){
 		if( err ){
