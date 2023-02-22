@@ -76,6 +76,18 @@ export const readBlock = async (
   }
   const _block = _rawBlock;
 
+  let validator = undefined;
+
+  try {
+    let host = '';
+    const w: any = (window as any);
+    if (w.debugVite) {
+      host = `http://localhost:${w.debugApiPort}`;
+    }
+    let validatorResult = await fetch(`${host}/get-validator?block-number=${_rawBlock.number}&extra-data=${_block.extraData}`);
+    validator = (await validatorResult.json()).validator;
+  } catch (e) {}
+
   const extBlock: ExtendedBlock = {
     ..._block,
     blockReward: provider.formatter.bigNumber('5000000000000000000'),
@@ -95,7 +107,7 @@ export const readBlock = async (
       _rawBlock.transactions.length
     ),
     timestamp: parseInt(`${_rawBlock.timestamp}`.replace('0x', ''), 16),
-    miner: _rawBlock.miner
+    miner: validator != undefined ? validator : _rawBlock.miner
   };
   return extBlock;
 };

@@ -9,4 +9,8 @@ export default defineConfig({
     viteCompression(),
     viteCompression({ algorithm: "brotliCompress" }),
   ],
+  define: { // For debug urls
+    "debugVite": true,
+    "debugApiPort": 8080 
+  }
 });

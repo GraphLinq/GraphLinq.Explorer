@@ -27,7 +27,20 @@ let routes = [... fs.readdirSync('./api/routes')]
 	console.log(`[Explorer - API] - ${method} - ${path}`);
 });
 
+const headers = {
+	'Access-Control-Allow-Origin': '*', /* @dev First, read about security */
+	'Access-Control-Allow-Methods': 'OPTIONS, POST, GET',
+	'Access-Control-Max-Age': 2592000, // 30 days
+	/** add other headers as per requirement */
+};
+
 http.createServer( function( req, res ) {
+	
+	if (req.method === 'OPTIONS') {
+		res.writeHead(204, headers);
+		res.end();
+		return;
+	}
 	
 	var urlObj = url.parse( req.url, true, false );
 	var tmp  = urlObj.pathname.lastIndexOf(".");
@@ -35,8 +48,8 @@ http.createServer( function( req, res ) {
 
 	let filePath = urlObj.pathname.replace('..', '');
 
-	if (app[filePath] != undefined) {
-		app[filePath](req, res);
+	if (app[filePath.replace(/^\//, '')] != undefined) {
+		app[filePath.replace(/^\//, '')](req, res, headers);
 		return ;
 	}
 

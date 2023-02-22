@@ -71,11 +71,20 @@ export class SearchController {
     address: string,
     baseBlock: number
   ): Promise<TransactionChunk> {
-    const _rawRes = await provider.send("ots_searchTransactionsBefore", [
-      address,
-      baseBlock,
-      PAGE_SIZE,
-    ]);
+
+    let host = '';
+    const w: any = (window as any);
+    if (w.debugVite) {
+      host = `http://localhost:${w.debugApiPort}`;
+    }
+    let result = await fetch(`${host}/get-transactions-before?address=${address}&baseblock=${baseBlock}&size=${PAGE_SIZE}`);
+    const _rawRes = (await result.json());
+
+    // const _rawRes = await provider.send("ots_searchTransactionsBefore", [
+    //   address,
+    //   baseBlock,
+    //   PAGE_SIZE,
+    // ]);
     return rawToProcessed(provider, _rawRes);
   }
 
@@ -84,11 +93,20 @@ export class SearchController {
     address: string,
     baseBlock: number
   ): Promise<TransactionChunk> {
-    const _rawRes = await provider.send("ots_searchTransactionsAfter", [
-      address,
-      baseBlock,
-      PAGE_SIZE,
-    ]);
+
+    let host = '';
+    const w: any = (window as any);
+    if (w.debugVite) {
+      host = `http://localhost:${w.debugApiPort}`;
+    }
+    let result = await fetch(`${host}/get-transactions-after?address=${address}&baseblock=${baseBlock}&size=${PAGE_SIZE}`);
+    const _rawRes = (await result.json());
+
+    // const _rawRes = await provider.send("ots_searchTransactionsAfter", [
+    //   address,
+    //   baseBlock,
+    //   PAGE_SIZE,
+    // ]);
     return rawToProcessed(provider, _rawRes);
   }
 

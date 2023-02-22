@@ -1,16 +1,15 @@
-const getValidator = (app) => {
-    app['get-validator'] = (req, res, headers) => {
-
+const getAccountTxs = (app) => {
+    app['get-transactions-before'] = (req, res, headers) => {
         res.writeHead(200, {
             ... headers,
             'Content-Type': 'application/json'
         });
         res.end(JSON.stringify({
-            validator: 'GraphLinq Nodes'
+            txs: []
         }));
     };
 };
 
 module.exports = {
-    getValidator
+    getAccountTxs
 };
