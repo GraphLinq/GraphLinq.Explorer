@@ -5,10 +5,20 @@ An open-source, fast, local, laptop-friendly Ethereum block explorer.
 ### Installation
 
 ```
-git clone https://github.com/ethereum-lists/4bytes.git
-git clone https://github.com/ethereum-lists/chains.git
-git clone https://github.com/wmitsuda/topic0.git
-git clone https://github.com/trustwallet/assets.git
+Prerequisites:
+
+node -v
+v14.20.1
+
+npm -v
+6.14.17
+```
+
+```
+[Optionnal] git clone https://github.com/ethereum-lists/4bytes.git
+[Optionnal] git clone https://github.com/ethereum-lists/chains.git
+[Optionnal] git clone https://github.com/wmitsuda/topic0.git
+[Optionnal] git clone https://github.com/trustwallet/assets.git
 
 npm install
 ```
