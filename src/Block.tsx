@@ -118,7 +118,7 @@ const Block: React.FC = () => {
               </span>
             </InfoRow>
           )}
-          {burntFees && (
+          {/* {burntFees && (
             <InfoRow title="Burnt Fees">
               <div className="flex items-baseline space-x-1">
                 <span className="flex space-x-1 text-orange-500">
@@ -134,7 +134,7 @@ const Block: React.FC = () => {
                 </span>
               </div>
             </InfoRow>
-          )}
+          )} */}
           <InfoRow title="Gas Used/Limit">
             <div className="flex items-baseline space-x-3">
               <div>
