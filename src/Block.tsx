@@ -60,7 +60,7 @@ const Block: React.FC = () => {
     <StandardFrame>
       <StandardSubtitle>
         <div className="flex items-baseline space-x-1">
-          <span>Block</span>
+          <span className="text-white">Block</span>
           <span className="text-base text-gray-500">#{blockNumberOrHash}</span>
           {block && (
             <NavBlock

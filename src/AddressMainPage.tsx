@@ -38,8 +38,7 @@ const AddressMainPage: React.FC<AddressMainPageProps> = () => {
   const urlFixer = useCallback(
     (address: ChecksummedAddress) => {
       navigate(
-        `/address/${address}${
-          direction ? "/" + direction : ""
+        `/address/${address}${direction ? "/" + direction : ""
         }?${searchParams.toString()}`,
         { replace: true }
       );
@@ -82,7 +81,7 @@ const AddressMainPage: React.FC<AddressMainPageProps> = () => {
               isENS={isENS}
             />
             <Tab.Group>
-              <Tab.List className="flex space-x-2 rounded-t-lg border-l border-r border-t bg-white">
+              <Tab.List className="flex space-x-2 rounded-t-lg border-l border-r border-t bg-white tab">
                 <NavTab href={`/address/${addressOrName}`}>Overview</NavTab>
                 {config?.experimental && (
                   <>
@@ -97,9 +96,8 @@ const AddressMainPage: React.FC<AddressMainPageProps> = () => {
                 {hasCode && (
                   <NavTab href={`/address/${addressOrName}/contract`}>
                     <span
-                      className={`flex items-baseline space-x-2 ${
-                        match === undefined ? "italic opacity-50" : ""
-                      }`}
+                      className={`flex items-baseline space-x-2 ${match === undefined ? "italic opacity-50" : ""
+                        }`}
                     >
                       <span>Contract</span>
                       {match === undefined ? (

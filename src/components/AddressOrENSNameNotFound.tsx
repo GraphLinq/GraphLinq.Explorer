@@ -14,7 +14,7 @@ const AddressOrENSNameNotFound: React.FC<AddressOrENSNameNotFoundProps> = ({
   <>
     <StandardSubtitle>Transaction Details</StandardSubtitle>
     <ContentFrame>
-      <div className="py-4 text-sm">
+      <div className="p-4 text-sm">
         "{addressOrENSName}" is not an ETH address
         {supportsENS && " or ENS name"}.
       </div>

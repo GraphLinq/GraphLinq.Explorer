@@ -21,11 +21,10 @@ const Copy: React.FC<CopyProps> = ({ value, rounded }) => {
 
   return (
     <button
-      className={`flex-no-wrap flex items-center justify-center space-x-1 self-center text-gray-500 focus:outline-none ${
-        rounded
+      className={`copy flex-no-wrap flex items-center justify-center space-x-1 self-center text-gray-500 focus:outline-none ${rounded
           ? "transition-shadows h-7 w-7 rounded-full bg-gray-200 text-xs transition-colors hover:bg-gray-500 hover:text-gray-200 hover:shadow"
           : "text-sm"
-      }`}
+        }`}
       title="Click to copy to clipboard"
       onClick={doCopy}
     >

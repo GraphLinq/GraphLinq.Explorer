@@ -37,7 +37,7 @@ const Transaction: FC = () => {
           <StandardSubtitle>Transaction Details</StandardSubtitle>
           {txData === null && (
             <ContentFrame>
-              <div className="py-4 text-sm">
+              <div className="p-4 text-sm">
                 Transaction <span className="font-hash">{txHash}</span> not
                 found.
               </div>

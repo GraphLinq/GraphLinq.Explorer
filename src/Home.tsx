@@ -59,27 +59,26 @@ const Home: FC = () => {
         >
           <div className="mb-10 flex">
             <input
-              className="w-full rounded-l border-l border-t border-b px-2 py-1 focus:outline-none"
+              className="w-full rounded-l border-l border-t border-b px-2 py-1 focus:outline-none big"
               type="text"
               size={50}
-              placeholder={`Search by address / txn hash / block number${
-                provider?.network.ensAddress ? " / ENS name" : ""
-              }`}
+              placeholder={`Search by address / txn hash / block number${provider?.network.ensAddress ? " / ENS name" : ""
+                }`}
               onChange={handleChange}
               ref={searchRef}
               autoFocus
             />
-            <button
+            {/* <button
               className="flex items-center justify-center rounded-r border bg-skin-button-fill px-2 py-1 text-base text-skin-button hover:bg-skin-button-hover-fill focus:outline-none"
               type="button"
               // onClick={() => setScanning(true)}
               title="Scan an ETH address using your camera"
             >
-              {/* <FontAwesomeIcon icon={faQrcode} /> */}
-            </button>
+              <FontAwesomeIcon icon={faQrcode} />
+            </button> */}
           </div>
           <button
-            className="mx-auto mb-10 rounded bg-skin-button-fill px-3 py-1 hover:bg-skin-button-hover-fill focus:outline-none"
+            className="mx-auto mb-10 rounded bg-skin-button-fill px-3 py-1 hover:bg-skin-button-hover-fill focus:outline-none bt btm"
             type="submit"
           >
             Search
@@ -87,11 +86,16 @@ const Home: FC = () => {
         </form>
         {latestBlock && (
           <NavLink
-            className="mt-5 flex flex-col items-center space-y-1 text-sm text-gray-500 hover:text-link-blue"
+            className="mt-5 flex flex-col items-center space-y-1 text-sm text-gray-500 hover:text-link-blue latest-block"
             to={blockURL(latestBlock.number)}
           >
-            <div>Latest block: {commify(latestBlock.number)}</div>
-            <Timestamp value={latestBlock.timestamp} />
+            <div className="latest-block-title">
+              <span>Latest block: {commify(latestBlock.number)}</span>
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#2334ff"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M17 7h-4v2h4c1.65 0 3 1.35 3 3s-1.35 3-3 3h-4v2h4c2.76 0 5-2.24 5-5s-2.24-5-5-5zm-6 8H7c-1.65 0-3-1.35-3-3s1.35-3 3-3h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-2zm-3-4h8v2H8z" /></svg>
+            </div>
+            <div className="info">
+              <Timestamp value={latestBlock.timestamp} />
+            </div>
           </NavLink>
         )}
         {finalizedSlotNumber !== undefined && (

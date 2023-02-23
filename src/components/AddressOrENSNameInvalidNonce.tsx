@@ -14,7 +14,7 @@ const AddressOrENSNameInvalidNonce: React.FC<
   <>
     <StandardSubtitle>Transaction Details</StandardSubtitle>
     <ContentFrame>
-      <div className="flex py-4 text-sm">
+      <div className="flex p-4 text-sm">
         <DecoratedAddressLink address={addressOrENSName} />
         <span>: no transaction found for nonce="{nonce}".</span>
       </div>

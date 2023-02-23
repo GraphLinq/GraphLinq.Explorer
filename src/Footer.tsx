@@ -6,11 +6,10 @@ const Footer: React.FC = () => {
 
   return (
     <div
-      className={`w-full border-t border-t-gray-100 px-2 py-1 text-xs ${
-        provider?.network.chainId === 614
-          ? "bg-link-blue text-gray-200"
-          : "bg-orange-400 text-white"
-      } text-center`}
+      className={`footer w-full ${provider?.network.chainId === 614
+        ? "bg-link-blue text-gray-200"
+        : "bg-orange-400 text-white warning"
+        } text-center`}
     >
       {provider ? (
         <>Using Graphlinq node at {provider.connection.url}</>
