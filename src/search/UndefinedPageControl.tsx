@@ -20,13 +20,13 @@ const UndefinedPageControl: React.FC<UndefinedPageControlProps> = ({
 }) => {
   return (
     <div className="flex items-baseline space-x-1 text-xs">
-      <UndefinedPageButton
+      {/* <UndefinedPageButton
         address={address}
         direction="first"
         disabled={disabled || isFirst}
       >
         First
-      </UndefinedPageButton>
+      </UndefinedPageButton> */}
       <UndefinedPageButton
         address={address}
         direction="prev"
@@ -43,13 +43,13 @@ const UndefinedPageControl: React.FC<UndefinedPageControlProps> = ({
       >
         {">"}
       </UndefinedPageButton>
-      <UndefinedPageButton
+      {/* <UndefinedPageButton
         address={address}
         direction="last"
         disabled={disabled || isLast}
       >
         Last
-      </UndefinedPageButton>
+      </UndefinedPageButton> */}
     </div>
   );
 };

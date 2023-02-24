@@ -109,7 +109,7 @@ export const useMethodSelector = (data: string): [boolean, string, string] => {
     ? "transfer"
     : fourBytesEntry?.name ?? rawFourBytes ?? "-";
   const methodTitle = isSimpleTransfer
-    ? "ETH Transfer"
+    ? "GLQ Transfer"
     : methodName === rawFourBytes
     ? methodName
     : `${methodName} [${rawFourBytes}]`;

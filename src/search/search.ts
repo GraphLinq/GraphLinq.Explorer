@@ -14,27 +14,28 @@ import { PAGE_SIZE } from "../params";
 import { ProcessedTransaction, TransactionChunk } from "../types";
 
 export const rawToProcessed = (provider: JsonRpcProvider, _rawRes: any) => {
+  console.log(_rawRes);
   const _res: TransactionResponse[] = _rawRes.txs.map((t: any) =>
     provider.formatter.transactionResponse(t)
   );
 
   return {
     txs: _res.map((t, i): ProcessedTransaction => {
-      const _rawReceipt = _rawRes.receipts[i];
-      const _receipt = provider.formatter.receipt(_rawReceipt);
+      // const _rawReceipt = _rawRes.receipts[i];
+      // const _receipt = provider.formatter.receipt(_rawReceipt);
       return {
         blockNumber: t.blockNumber!,
-        timestamp: provider.formatter.number(_rawReceipt.timestamp),
-        idx: _receipt.transactionIndex,
+        timestamp: provider.formatter.number(1),//_rawReceipt.timestamp),
+        idx: 0,//_receipt.transactionIndex,
         hash: t.hash,
         from: t.from,
         to: t.to ?? null,
-        createdContractAddress: _receipt.contractAddress,
+        createdContractAddress: '',//_receipt.contractAddress,
         value: t.value,
-        fee: _receipt.gasUsed.mul(t.gasPrice!),
+        fee: provider.formatter.bigNumber(0),//_receipt.gasUsed.mul(t.gasPrice!),
         gasPrice: t.gasPrice!,
         data: t.data,
-        status: _receipt.status!,
+        status: 1//_receipt.status!,
       };
     }),
     firstPage: _rawRes.firstPage,

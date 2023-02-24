@@ -34,6 +34,7 @@
     "ethereumjs-utils": "^5.2.5",
     "ethers": "^5.7.2",
     "highlightjs-solidity": "^2.0.6",
+    "nedb": "^1.8.0",
     "react": "^18.2.0",
     "react-blockies": "^1.4.1",
     "react-chartjs-2": "^4.3.1",

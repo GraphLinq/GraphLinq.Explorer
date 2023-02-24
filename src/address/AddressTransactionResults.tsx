@@ -86,7 +86,7 @@ const AddressTransactionResults: FC<AddressAwareComponentProps> = ({
         readLastPage();
       }
     }
-  }, [provider, address, direction, hash, controller]);
+  }, [/*provider,*/ address, direction, hash])//, direction, hash, controller]);
 
   const page = useMemo(() => controller?.getPage(), [controller]);
 
@@ -158,7 +158,7 @@ const NavBar: FC<NavBarProps> = ({ address, page, controller }) => (
     <UndefinedPageControl
       address={address}
       isFirst={controller?.isFirst}
-      isLast={controller?.isLast}
+      isLast={(page?.length ? page?.length : 0) < 25}
       prevHash={page?.[0]?.hash ?? ""}
       nextHash={page?.[page.length - 1]?.hash ?? ""}
       disabled={controller === undefined}

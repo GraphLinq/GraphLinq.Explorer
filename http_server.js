@@ -1,8 +1,8 @@
 var fs = require('fs');
 var http = require('http');
 var url = require('url');
+const { db } = require('./api/db');
 var ROOT_DIR = "./dist/";
-
 var mimeTypes ={
 	"js":"text/javascript",
 	"json":"text/data",
@@ -11,8 +11,8 @@ var mimeTypes ={
 	"jpg":"image/jpg",
 	"jpeg":"image/jpeg"
 };
-
-let app = {};
+let app = { };
+db(app);
 
 let routes = [... fs.readdirSync('./api/routes')]
     .filter(x => !['example.js'].includes(x)  && x.endsWith('.js'))

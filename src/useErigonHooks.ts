@@ -84,7 +84,7 @@ export const readBlock = async (
     if (w.debugVite) {
       host = `http://localhost:${w.debugApiPort}`;
     }
-    let validatorResult = await fetch(`${host}/get-validator?block-number=${_rawBlock.number}&extra-data=${_block.extraData}`);
+    let validatorResult = await fetch(`${host}/get-validator?block-number=${_rawBlock.number}`);
     validator = (await validatorResult.json()).validator;
   } catch (e) {}
 
