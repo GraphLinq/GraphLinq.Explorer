@@ -70,9 +70,17 @@ body .btm i{top:1px;}
 body .bt:hover{background-position:center -50%!important;}
 body .bt:disabled {background: rgb(120 120 120 / 30%) !important; cursor: not-allowed;}
 
+.home-logo img {
+  height: 100px;
+}
+
 @media screen and (max-width: 768px) {
   .home-logo {
     max-height: 100px;
+  }
+  .home-logo img {
+    max-width: 90%;
+    height: auto;
   }
   .home-form {
     width: 100%;
@@ -97,8 +105,8 @@ body .bt:disabled {background: rgb(120 120 120 / 30%) !important; cursor: not-al
     gap: 12px;
   }
 }
-.header-logo svg {
-  height: 30px;
+.header-logo img {
+  height: 40px;
 }
 .header-menu {
   display: flex;
