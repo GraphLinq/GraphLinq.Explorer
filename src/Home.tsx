@@ -48,11 +48,11 @@ const Home: FC = () => {
       </AppConfigContext.Provider>
       <div className="flex grow flex-col items-center pb-5">
         {/* {isScanning && <CameraScanner turnOffScan={() => setScanning(false)} />} */}
-        <div className="mt-5 mb-10 flex max-h-64 grow items-end">
+        <div className="home-logo mt-5 mb-10 flex max-h-64 grow items-end">
           <Logo />
         </div>
         <form
-          className="flex w-1/3 flex-col"
+          className="home-form flex w-1/3 flex-col"
           onSubmit={handleSubmit}
           autoComplete="off"
           spellCheck={false}

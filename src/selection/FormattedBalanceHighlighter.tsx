@@ -19,11 +19,11 @@ const FormattedBalanceHighlighter: FC<FormattedBalanceProps> = ({
 
   return (
     <span
-      className={`truncate rounded border border-dashed px-1 hover:border-transparent hover:bg-transparent ${
+      className={`truncate rounded border border-dashed px-1 hover:border-transparent hover:bg-transparent balance-highlight ${
         selection !== null &&
         selection.type === "value" &&
         selection.content === value.toString()
-          ? "border-orange-400 bg-amber-100"
+          ? "active"
           : "border-transparent"
       }`}
       onMouseEnter={select}

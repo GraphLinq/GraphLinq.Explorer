@@ -29,7 +29,7 @@ const Trace: React.FC<TraceProps> = ({ txData }) => {
             </div>
           </>
         ) : (
-          <div className="h-7 w-96 rounded border px-1 py-1 hover:border-gray-500">
+          <div className="h-7 w-96 rounded">
             <div className="h-full w-full animate-pulse rounded bg-gray-200"></div>
           </div>
         )}

@@ -8,7 +8,7 @@ const TransactionAddressWithCopy: FC<TransactionAddressProps> = ({
   address,
   ...rest
 }) => (
-  <div className="-ml-1 flex items-baseline space-x-2">
+  <div className="-ml-1 flex items-baseline space-x-2 from-nonce">
     <TransactionAddress address={address} {...rest} />
     <Copy value={address} />
   </div>

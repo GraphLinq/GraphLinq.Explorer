@@ -47,17 +47,41 @@ input.big {
   height: 60px;
 }
 
+textarea {
+  background-color: #090812 !important;
+  height: 120px;
+  border: 0;
+  border-radius: 10px !important;
+  padding: 10px 20px !important;
+  color: rgb(171,161,202) !important;
+  resize: none;
+}
+
 /* bg Webgl */
 #xx{position:fixed;width:calc(100vw - 240px);height:calc(300px + 150 * (100vw - 320px) / 1080);opacity:.3;top:0;left:0;z-index:0;transform:translateY(-30%);pointer-events:none;}
 #xx canvas{width:100vw!important;height:calc(500px + 300 * (100vw - 320px) / 1080)!important;}
 
 /* bt */
-body .bt{display:inline-flex;height:39px;align-items:center;font-size:13px;color:#fff;padding:2px 20px 0;box-shadow:0 5px calc(25px + 10 * (100vw - 320px) / 1080) rgba(16,112,255,.3), 0 0 0 1px rgba(255,255,255,.05) inset, 0 0 0 1px rgba(0,0,0,.5)!important;transition:background-position .4s, transform .2s;border-radius:80px;cursor:pointer;font-weight:800;background:linear-gradient(to right, #3907ff, #017dff, #01c6ff)!important;background-size:200%!important;}
+body .bt{display:inline-flex;height:39px;align-items:center;font-size:13px;color:#fff;padding:2px 20px 0;box-shadow:0 5px calc(25px + 10 * (100vw - 320px) / 1080) rgba(16,112,255,.3), 0 0 0 1px rgba(255,255,255,.05) inset, 0 0 0 1px rgba(0,0,0,.5);transition:background-position .4s, transform .2s;border-radius:80px;cursor:pointer;font-weight:800;background:linear-gradient(to right, #3907ff, #017dff, #01c6ff);background-size:200%!important;}
 body .bt:active{transform:scale(.95);}
 body .btm{font-size:15px;padding:1px 22px 0;height:47px;}
 body .bt i{margin-left:7px;margin-right:-2px;font-size:85%;}
 body .btm i{top:1px;}
 body .bt:hover{background-position:center -50%!important;}
+body .bt:disabled {background: rgb(120 120 120 / 30%) !important; cursor: not-allowed;}
+
+@media screen and (max-width: 768px) {
+  .home-logo {
+    max-height: 100px;
+  }
+  .home-form {
+    width: 100%;
+    padding: 0 16px;
+  }
+  .home-form > div {
+    margin-bottom: 8px;
+  }
+}
 
 /* header */
 .header {
@@ -67,6 +91,12 @@ body .bt:hover{background-position:center -50%!important;}
   padding: 10px 20px;
   background-color: #15122b;
 }
+@media screen and (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
 .header-logo svg {
   height: 30px;
 }
@@ -75,6 +105,11 @@ body .bt:hover{background-position:center -50%!important;}
   align-items: center;
   gap: 10px;
   color: rgb(171, 161, 202);
+}
+@media screen and (max-width: 768px) {
+  .header-menu {
+    display: none;
+  }
 }
 .header-menu a {
   font-size: 12px;
@@ -96,6 +131,11 @@ body .bt:hover{background-position:center -50%!important;}
   height: 1px;
   background-color: rgb(171, 161, 202);
   opacity: 0.5;
+}
+@media screen and (max-width: 768px) {
+  .header-gas {
+    display: none;
+  }
 }
 .header-gas span {
 color: white;
@@ -154,6 +194,13 @@ color: white;
   border-radius: 8px;
   background-color: rgb(41 35 82 / 50%);
 }
+@media screen and (max-width: 768px) {
+  .block-content > .grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+}
 .block-content .text-black {
   color: rgb(85, 25, 238);
 }
@@ -163,9 +210,19 @@ color: white;
 }
 
 .tab {
+  position: relative;
+  z-index: 1;
   background-color: rgb(41 35 82);
   border: 0;
   color: white;
+}
+
+.tab-item {
+  border-color: rgb(255 255 255 / 10%);
+}
+
+.tab-item.active {
+  border-color: #2334ff;
 }
 
 .copy {
@@ -173,4 +230,51 @@ color: white;
 }
 .copy:hover {
   background-color: #342d61 !important;
+}
+
+.bg-skin-from {
+  padding: 6px 10px;
+  border-radius: 100px;
+  background-color: #292352;
+}
+
+.balance-highlight {
+  padding: 4px;
+}
+
+.balance-highlight.active {
+  background-color: rgb(41 35 82);
+}
+
+.bg-amber-100 {
+  background-color: gold !important;
+  color: black;
+}
+
+.modetab {
+  box-shadow: 0 0 0 1px rgba(255,255,255,.05) inset, 0 0 0 1px rgba(0,0,0,.5) !important;
+  background: inherit !important;
+  border-radius: 8px !important;
+  border: 1px solid transparent;
+}
+
+.modetab.active {
+  border-color: rgb(255 255 255 / 80%);
+}
+
+.font-hash, .font-address {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media screen and (max-width: 768px) {
+  .from-nonce {
+    max-width: 60%;
+  }
+}
+@media screen and (max-width: 768px) {
+  .standard-frame {
+    padding: 16px;
+  }
 }

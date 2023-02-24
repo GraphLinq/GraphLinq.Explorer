@@ -24,7 +24,7 @@ const FiatValue: FC<FiatValueProps> = ({
   fgColor,
 }) => (
   <span
-    className={`px-2 ${borderColor ?? ""} rounded-lg border ${
+    className={`px-2 ${borderColor ?? ""} rounded-lg ${
       bgColor ?? ""
     } text-xs ${fgColor ?? ""}`}
   >

@@ -46,7 +46,7 @@ const Transaction: FC = () => {
           {txData && (
             <StandardSelectionBoundary>
               <Tab.Group>
-                <Tab.List className="flex space-x-2 rounded-t-lg border-l border-r border-t bg-white">
+                <Tab.List className="flex space-x-2 rounded-t-lg border-l border-r border-t bg-white tab">
                   <NavTab href=".">Overview</NavTab>
                   {txData.confirmedData?.blockNumber !== undefined && (
                     <NavTab href="logs">

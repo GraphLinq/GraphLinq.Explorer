@@ -11,11 +11,11 @@ const ModeTab: FC<PropsWithChildren<ModeTabProps>> = ({
 }) => (
   <Tab
     className={({ selected }) =>
-      `rounded-lg border bg-gray-100 px-2 py-1 ${
+      `modetab bt ${
         disabled
-          ? "cursor-default border-gray-100 text-gray-300"
-          : "text-gray-500 hover:bg-gray-200 hover:text-gray-600 hover:shadow"
-      } text-xs ${selected ? "border-blue-300" : ""}`
+          ? "cursor-default border-gray-100 text-gray-300 disabled"
+          : ""
+      } text-xs ${selected ? "border-blue-300 active" : ""}`
     }
     disabled={disabled}
   >

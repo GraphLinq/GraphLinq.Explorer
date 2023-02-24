@@ -104,7 +104,7 @@ const AddressTransactionResults: FC<AddressAwareComponentProps> = ({
           )}
           {creator && (
             <InfoRow title="Contract creator">
-              <div className="flex divide-x-2 divide-dotted divide-gray-300">
+              <div className="flex items-center divide-x-2 divide-dotted divide-gray-300">
                 <TransactionAddressWithCopy
                   address={creator.creator}
                   showCodeIndicator
