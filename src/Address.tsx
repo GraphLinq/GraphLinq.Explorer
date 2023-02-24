@@ -17,6 +17,7 @@ const Address: FC = () => {
   // Search address by nonce === transaction @ nonce
   const [searchParams] = useSearchParams();
   const rawNonce = searchParams.get("nonce");
+  
   if (rawNonce !== null) {
     return <AddressTransactionByNonce rawNonce={rawNonce} />;
   }

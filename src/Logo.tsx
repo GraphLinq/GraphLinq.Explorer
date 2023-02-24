@@ -2,7 +2,7 @@ import React from "react";
 import Otter from "./otter.png";
 
 const Logo: React.FC = () => (
-  <div className="flex cursor-default items-center justify-center space-x-4 font-title text-6xl font-bold text-link-blue">
+  <div className="flex cursor-default items-center justify-center space-x-4 font-title text-6xl font-bold text-link-blue img-logo">
     <img src="/logo.png" alt="" />
     {/* <svg xmlns="http://www.w3.org/2000/svg" id="Calque_1" x="0" y="0" version="1.1" height={60} viewBox="0 0 202.4 36.9">
       <linearGradient id="SVGID_1_" x1="19.447" x2="19.447" y1="0" y2="36.879" gradientUnits="userSpaceOnUse">

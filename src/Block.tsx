@@ -25,6 +25,7 @@ import { useLatestBlockNumber } from "./useLatestBlock";
 import { blockTxsURL } from "./url";
 import { useBlockData } from "./useErigonHooks";
 import { useChainInfo } from "./useChainInfo";
+import Loader from "./components/Loader";
 
 const Block: React.FC = () => {
   const { provider } = useContext(RuntimeContext);
@@ -73,7 +74,7 @@ const Block: React.FC = () => {
       {block === null && (
         <BlockNotFound blockNumberOrHash={blockNumberOrHash} />
       )}
-      {block && (
+      {block ? (
         <ContentFrame>
           <InfoRow title="Block Height">
             <span className="font-bold">{commify(block.number)}</span>
@@ -175,7 +176,7 @@ const Block: React.FC = () => {
             <span className="font-data">{block.nonce}</span>
           </InfoRow>
         </ContentFrame>
-      )}
+      ) : (<Loader/>)}
     </StandardFrame>
   );
 };
