@@ -10,6 +10,7 @@ import { RuntimeContext } from "./useRuntime";
 import { useTxData } from "./useErigonHooks";
 import { SelectedTransactionContext } from "./useSelectedTransaction";
 import { BlockNumberContext } from "./useBlockTagContext";
+import Loader from "./components/Loader";
 
 const Details = lazy(() => import("./transaction/Details"));
 const Logs = lazy(() => import("./transaction/Logs"));
@@ -43,7 +44,7 @@ const Transaction: FC = () => {
               </div>
             </ContentFrame>
           )}
-          {txData && (
+          {txData ? (
             <StandardSelectionBoundary>
               <Tab.Group>
                 <Tab.List className="flex space-x-2 rounded-t-lg border-l border-r border-t bg-white tab">
@@ -68,7 +69,7 @@ const Transaction: FC = () => {
                 </Routes>
               </Suspense>
             </StandardSelectionBoundary>
-          )}
+          ) : (<Loader/>)}
         </StandardFrame>
       </BlockNumberContext.Provider>
     </SelectedTransactionContext.Provider>

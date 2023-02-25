@@ -70,9 +70,17 @@ body .btm i{top:1px;}
 body .bt:hover{background-position:center -50%!important;}
 body .bt:disabled {background: rgb(120 120 120 / 30%) !important; cursor: not-allowed;}
 
+.home-logo img {
+  height: 100px;
+}
+
 @media screen and (max-width: 768px) {
   .home-logo {
     max-height: 100px;
+  }
+  .home-logo img {
+    max-width: 90%;
+    height: auto;
   }
   .home-form {
     width: 100%;
@@ -97,8 +105,8 @@ body .bt:disabled {background: rgb(120 120 120 / 30%) !important; cursor: not-al
     gap: 12px;
   }
 }
-.header-logo svg {
-  height: 30px;
+.header-logo img {
+  height: 40px;
 }
 .header-menu {
   display: flex;
@@ -205,6 +213,15 @@ color: white;
   color: rgb(85, 25, 238);
 }
 
+.waiting {
+  height: 500px;
+}
+@media screen and (max-width: 768px) {
+  .waiting {
+    max-width: 90%;
+    height: 70vh;
+  }
+}
 .waiting-link {
   color: rgb(85, 25, 238);
 }
@@ -226,6 +243,7 @@ color: white;
 }
 
 .copy {
+  flex-shrink: 0;
   background-color: #292352;
 }
 .copy:hover {
@@ -270,11 +288,33 @@ color: white;
 }
 @media screen and (max-width: 768px) {
   .from-nonce {
-    max-width: 60%;
+    max-width: 70%;
   }
 }
 @media screen and (max-width: 768px) {
   .standard-frame {
     padding: 16px;
   }
+}
+
+.loading {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  /* color: rgb(236, 231, 253); */
+  background-color: #201b40;
+  border-radius: 8px;
+  color: #aba1ca;
+  padding: 12px 20px;
+}
+.img-logo + .loading {
+  margin-top: 24px;
+}
+
+.loading svg {
+  height: 48px;
+  width: auto;
 }

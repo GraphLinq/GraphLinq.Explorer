@@ -13,7 +13,7 @@ const AddressOrENSNameNoTx: React.FC<AddressOrENSNameNoTxProps> = ({
   <>
     <StandardSubtitle>Transaction Details</StandardSubtitle>
     <ContentFrame>
-      <div className="flex py-4 text-sm">
+      <div className="flex p-4 text-sm">
         <DecoratedAddressLink address={addressOrENSName} />
         <span>: no outbound transactions found.</span>
       </div>

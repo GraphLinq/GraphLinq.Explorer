@@ -24,6 +24,7 @@ import { useHasCode } from "./useErigonHooks";
 import { useAddressOrENS } from "./useResolvedAddresses";
 import { useSourcifyMetadata } from "./sourcify/useSourcify";
 import { ChecksummedAddress } from "./types";
+import Loader from "./components/Loader";
 
 type AddressMainPageProps = {};
 
@@ -73,7 +74,7 @@ const AddressMainPage: React.FC<AddressMainPageProps> = () => {
           supportsENS={provider?.network.ensAddress !== undefined}
         />
       ) : (
-        checksummedAddress && (
+        checksummedAddress ? (
           <>
             <AddressSubtitle
               addressOrName={addressOrName}
@@ -161,7 +162,7 @@ const AddressMainPage: React.FC<AddressMainPageProps> = () => {
               </Tab.Panels>
             </Tab.Group>
           </>
-        )
+        ) : (<Loader/>)
       )}
     </StandardFrame>
   );
