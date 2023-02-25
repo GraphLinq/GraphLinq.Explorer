@@ -30,3 +30,7 @@ yarn-error.log*
 /trustwallet
 /chains
 /4bytes
+
+.block
+.blocks.db
+.txs.db
