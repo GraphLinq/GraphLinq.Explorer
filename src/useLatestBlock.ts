@@ -19,8 +19,9 @@ export const useLatestBlockHeader = (provider?: JsonRpcProvider) => {
       const _raw = await provider.send("eth_getHeaderByNumber", [
         `0x${blockNumber.toString(16)}`,
       ]);
+      const gasPrice = await provider.getGasPrice();
       const _block = provider.formatter.block(_raw);
-      setLatestBlock(_block);
+      setLatestBlock({ ... _block, gasPrice: gasPrice } as Block);
     };
 
     // Immediately read and set the latest block header

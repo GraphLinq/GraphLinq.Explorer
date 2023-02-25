@@ -33,7 +33,7 @@ const Header: FC<{ hideLogo: boolean }> = ({ hideLogo }) => {
           <div className="flex items-baseline space-x-3">
             <div>
               {/* GAS PRICE GWEI */}
-              {latestBlock && <span className="info header-gas text-sm" >Gas: <span>{latestBlock.baseFeePerGas?.toString()} Gwei</span></span>}
+              {latestBlock && <span className="info header-gas text-sm" >Gas: <span>{(((latestBlock as any)?.gasPrice.toString()) / 1000000000).toFixed(0)} Gwei</span></span>}
             </div>
             {provider?.network.chainId === 1 && <PriceBox />}
             <form
