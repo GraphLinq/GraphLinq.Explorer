@@ -94,9 +94,10 @@ const db = async (app) => {
             );
             if (!txAlreadyExists) {
               // insert transaction
-              await new Promise((resolve) =>
+              await new Promise((resolve) => {
+                tx.timestamp = block.timestamp
                 app.db.txs.insert(tx, (err, newDoc) => resolve(newDoc))
-              );
+              });
             }
           }
         }
