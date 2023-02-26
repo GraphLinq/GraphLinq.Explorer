@@ -14,18 +14,23 @@ import { PAGE_SIZE } from "../params";
 import { ProcessedTransaction, TransactionChunk } from "../types";
 
 export const rawToProcessed = (provider: JsonRpcProvider, _rawRes: any) => {
-  console.log(_rawRes);
-  const _res: TransactionResponse[] = _rawRes.txs.map((t: any) =>
-    provider.formatter.transactionResponse(t)
-  );
+  const _res: TransactionResponse[] = [];
+
+  _rawRes.txs.forEach((x: any) => {
+    const tx =  provider.formatter.transactionResponse(x)
+    tx.timestamp = x.timestamp;
+    _res.push(tx)
+  })
+
 
   return {
     txs: _res.map((t, i): ProcessedTransaction => {
+      console.log(t)
       // const _rawReceipt = _rawRes.receipts[i];
       // const _receipt = provider.formatter.receipt(_rawReceipt);
       return {
         blockNumber: t.blockNumber!,
-        timestamp: provider.formatter.number(1),//_rawReceipt.timestamp),
+        timestamp: t.timestamp,//_rawReceipt.timestamp),
         idx: 0,//_receipt.transactionIndex,
         hash: t.hash,
         from: t.from,
@@ -73,14 +78,11 @@ export class SearchController {
     baseBlock: number
   ): Promise<TransactionChunk> {
 
-    let host = '';
-    const w: any = (window as any);
-    if (w.debugVite) {
-      host = `http://localhost:${w.debugApiPort}`;
-    }
-    let result = await fetch(`${host}/get-transactions-before?address=${address}&baseblock=${baseBlock}&size=${PAGE_SIZE}`);
-    const _rawRes = (await result.json());
 
+    const host = `https://api-explorer.graphlinq.io`;
+    let result = await fetch(`${host}/get-transactions-before?address=${address}&baseblock=${baseBlock}&size=${PAGE_SIZE}`);
+    
+    const _rawRes = (await result.json());
     // const _rawRes = await provider.send("ots_searchTransactionsBefore", [
     //   address,
     //   baseBlock,
@@ -95,11 +97,8 @@ export class SearchController {
     baseBlock: number
   ): Promise<TransactionChunk> {
 
-    let host = '';
-    const w: any = (window as any);
-    if (w.debugVite) {
-      host = `http://localhost:${w.debugApiPort}`;
-    }
+    let host = `https://api-explorer.graphlinq.io`;
+
     let result = await fetch(`${host}/get-transactions-after?address=${address}&baseblock=${baseBlock}&size=${PAGE_SIZE}`);
     const _rawRes = (await result.json());
 

@@ -12,7 +12,7 @@ import Logo from "./Logo";
 
 const CameraScanner = lazy(() => import("./search/CameraScanner"));
 
-const Header: FC<{ hideLogo: boolean }> = ({ hideLogo }) => {
+const Header: FC<{ hideLogo: any }> = ({ hideLogo }) => {
   const { provider } = useContext(RuntimeContext);
   const [searchRef, handleChange, handleSubmit] = useGenericSearch();
   const [isScanning, setScanning] = useState<boolean>(false);

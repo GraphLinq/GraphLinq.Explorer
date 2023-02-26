@@ -20,6 +20,7 @@ const getAccountTxs = (app) => {
             ... headers,
             'Content-Type': 'application/json'
         });
+        
         res.end(JSON.stringify({
             txs: transactions
         }));

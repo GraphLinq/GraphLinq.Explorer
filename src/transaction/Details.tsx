@@ -381,21 +381,21 @@ const Details: React.FC<DetailsProps> = ({ txData }) => {
           )
         </InfoRow>
       )}
-      {/* {txData.confirmedData && (
+      {txData.confirmedData && (
         <>
           <InfoRow title="Transaction Fee">
             <div className="space-y-3">
               <div>
                 <TransactionFee confirmedData={txData.confirmedData} />
               </div>
-              {hasEIP1559 && <RewardSplit txData={txData} />}
+              {/* {hasEIP1559 && <RewardSplit txData={txData} />} */}
             </div>
           </InfoRow>
           <InfoRow title={`${name} Price`}>
             <NativeTokenPrice blockTag={txData.confirmedData.blockNumber} />
           </InfoRow>
         </>
-      )} */}
+      )}
       <InfoRow title="Input Data">
         <InputDecoder
           fourBytes={fourBytes}

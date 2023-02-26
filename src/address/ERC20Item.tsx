@@ -26,7 +26,7 @@ const ERC20Item: FC<ERC20temProps> = ({ address, p }) => {
           <BlockLink blockTag={p.blockNumber} />
         </td>
         <td>
-          <TimestampAge timestamp={p.timestamp} />
+          <TimestampAge timestamp={p.timestamp ?? 0} />
         </td>
         <td>
           <span className="col-span-2 flex items-baseline justify-between space-x-2 pr-2">

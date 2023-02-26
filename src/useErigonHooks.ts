@@ -79,11 +79,7 @@ export const readBlock = async (
   let validator = undefined;
 
   try {
-    let host = '';
-    const w: any = (window as any);
-    if (w.debugVite) {
-      host = `http://localhost:${w.debugApiPort}`;
-    }
+    let host = `https://api-explorer.graphlinq.io`;
     let validatorResult = await fetch(`${host}/get-validator?block-number=${_rawBlock.number}`);
     validator = (await validatorResult.json()).validator;
   } catch (e) {}

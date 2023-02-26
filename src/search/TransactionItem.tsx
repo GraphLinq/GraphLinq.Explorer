@@ -65,7 +65,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
         <span>
           <BlockLink blockTag={tx.blockNumber} />
         </span>
-        <TimestampAge timestamp={tx.timestamp} />
+        <TimestampAge timestamp={tx.timestamp ?? 0} />
         <span className="col-span-2 flex items-baseline justify-between space-x-2 pr-2">
           <span className="truncate">
             {tx.from && (

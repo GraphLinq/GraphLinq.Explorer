@@ -24,68 +24,14 @@ const ConnectionErrorPanel: React.FC<ConnectionErrorPanelProps> = ({
       <div className="min-w-lg m-auto h-60 max-w-lg text-lg text-white waiting">
         <Logo/>
         <Loader/>
-        {/* <Step type="wait" msg="Trying to connect to GraphLinq node..." />
-        <div className="flex space-x-2">
-          <span className="ml-7 text-base v">{config?.chainURL}</span>
-        </div> */}
-        {connStatus === ConnectionStatus.NOT_ETH_NODE && (
-          <Step type="error" msg="It does not seem to be an ETH node">
-            <p>Make sure your browser can access the URL above.</p>
-            <p>
-              If you want to customize the Erigon rpcdaemon endpoint, please
-              follow these{" "}
-              <a
-                href="https://github.com/wmitsuda/otterscan#run-otterscan-docker-image-from-docker-hub"
-                target="_blank"
-                rel="noreferrer noopener"
-                className="font-bold text-blue-800 hover:underline"
-              >
-                instructions
-              </a>
-              .
-            </p>
-          </Step>
-        )}
-        {connStatus === ConnectionStatus.NOT_ERIGON && (
-          <>
-            <Step type="ok" msg="It is an ETH node" />
-            <Step type="error" msg="It does not seem to be an Erigon node">
-              Make sure you rpcdaemon with Otterscan patches is up and running
-              and the <strong>erigon_</strong> namespace is enabled according to
-              the{" "}
-              <a
-                href="https://github.com/wmitsuda/otterscan#install-otterscan-patches-on-top-of-erigon"
-                target="_blank"
-                rel="noreferrer noopener"
-                className="font-bold text-blue-800 hover:underline"
-              >
-                instructions
-              </a>
-              .
-            </Step>
-          </>
-        )}
-        {connStatus === ConnectionStatus.NOT_OTTERSCAN_PATCHED && (
-          <>
-            <Step type="ok" msg="It is an Erigon node" />
-            <Step
-              type="error"
-              msg="It does not seem to contain up-to-date Otterscan patches"
-            >
-              Make sure you compiled rpcdaemon with compatible Otterscan patches
-              and enabled <strong>ots_</strong> namespace according to the{" "}
-              <a
-                href="https://github.com/wmitsuda/otterscan#install-otterscan-patches-on-top-of-erigon"
-                target="_blank"
-                rel="noreferrer noopener"
-                className="font-bold text-blue-800 hover:underline"
-              >
-                instructions
-              </a>
-              .
-            </Step>
-          </>
-        )}
+
+      {connStatus !== undefined && connStatus === ConnectionStatus.ERROR &&
+                <div className="loading">  <Step type="error" msg="Error occured">
+                <p>Error while trying to connect on the GraphLinq Network, please try again later, the node access for the explorer may be in maintenance.</p>
+                <br/>
+                </Step> </div> }
+
+
       </div>
     </div>
   );

@@ -43,25 +43,15 @@ export const useProvider = (
         provider = new JsonRpcBatchProvider(chainURL);
       }
 
-      // Check if it is at least a regular ETH node
+      // Check if node is live
       let blockNumber: number = 0;
       try {
         blockNumber = await provider.getBlockNumber();
       } catch (err) {
         console.log(err);
-        setConnStatus(ConnectionStatus.NOT_ETH_NODE);
+        setConnStatus(ConnectionStatus.ERROR);
         setProvider(undefined);
-        return;
-      }
-
-      // Check if it is an Erigon node by probing a lightweight method
-      try {
-        await provider.send("eth_getHeaderByNumber", [`0x${blockNumber.toString(16)}`]);
-      } catch (err) {
-        console.log(err);
-        setConnStatus(ConnectionStatus.NOT_ERIGON);
-        setProvider(undefined);
-        return;
+        setTimeout(() => tryToConnect(), 1000);
       }
 
       setConnStatus(ConnectionStatus.CONNECTED);
@@ -82,6 +72,7 @@ export const useProvider = (
       //   setProvider(undefined);
       // }
     };
+    
     tryToConnect();
   }, [chainURL]);
 

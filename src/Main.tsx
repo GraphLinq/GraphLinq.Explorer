@@ -17,7 +17,7 @@ const Main: React.FC = () => {
 
   return (
     <AppConfigContext.Provider value={appConfig}>
-      <Header />
+      <Header hideLogo={undefined} />
       <Outlet />
     </AppConfigContext.Provider>
   );

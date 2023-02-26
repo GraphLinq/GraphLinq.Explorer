@@ -7,7 +7,7 @@ export enum FeeDisplay {
 }
 
 export const useFeeToggler = (): [FeeDisplay, () => void] => {
-  const [feeDisplay, setFeeDisplay] = useState<FeeDisplay>(FeeDisplay.TX_FEE);
+  const [feeDisplay, setFeeDisplay] = useState<FeeDisplay>(FeeDisplay.GAS_PRICE);
   const feeDisplayToggler = () => {
     setFeeDisplay(feeDisplay + 1);
     if (feeDisplay === FeeDisplay.GAS_PRICE) {

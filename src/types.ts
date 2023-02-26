@@ -7,11 +7,12 @@ export enum ConnectionStatus {
   NOT_ERIGON,
   NOT_OTTERSCAN_PATCHED,
   CONNECTED,
+  ERROR,
 }
 
 export type ProcessedTransaction = {
   blockNumber: number;
-  timestamp: number;
+  timestamp: number | undefined;
   miner?: string;
   idx: number;
   hash: string;
