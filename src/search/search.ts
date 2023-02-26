@@ -25,7 +25,6 @@ export const rawToProcessed = (provider: JsonRpcProvider, _rawRes: any) => {
 
   return {
     txs: _res.map((t, i): ProcessedTransaction => {
-      console.log(t)
       // const _rawReceipt = _rawRes.receipts[i];
       // const _receipt = provider.formatter.receipt(_rawReceipt);
       return {

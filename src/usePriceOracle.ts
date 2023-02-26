@@ -9,13 +9,14 @@ import useSWRImmutable from "swr/immutable";
 import { ChecksummedAddress } from "./types";
 import { useContext } from "react";
 import { RuntimeContext } from "./useRuntime";
+import { useConfig } from "./useConfig";
 
 const FEED_REGISTRY_MAINNET: ChecksummedAddress =
   "0x47Fb2585D2C56Fe188D0E6ec628a38b74fCeeeDf";
 
 // The USD "token" address for Chainlink feed registry's purposes
 const USD = "0x0000000000000000000000000000000000000348";
-var GLQPriceCache: any = undefined;
+export var GLQPriceCache: any = undefined;
 
 type FeedRegistryFetcherKey = [ChecksummedAddress, BlockTag];
 type FeedRegistryFetcherData = [BigNumber | undefined, number | undefined];
@@ -92,6 +93,8 @@ const ethUSDFetcher =
     provider: JsonRpcProvider | undefined
   ): Fetcher<any | undefined, ["ethusd", BlockTag | undefined]> =>
   async ([_, blockTag]) => {
+    // const config = useConfig();
+    // const response = await fetch(config?.coingeckoPriceUrl ? config?.coingeckoPriceUrl : '');
     const response = await fetch(
       `https://api.coingecko.com/api/v3/coins/graphlinq-protocol`);
     const result = await response.json();
