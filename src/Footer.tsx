@@ -11,11 +11,8 @@ const Footer: React.FC = () => {
         : "bg-orange-400 text-white warning"
         } text-center`}
     >
-      {provider ? (
-        <>Using Graphlinq node at {provider.connection.url}</>
-      ) : (
-        <>Waiting for the provider...</>
-      )}
+      <a style={{margin:"20px", color:"#7272ff"}} href="#"><u>live on mainnet</u></a>  
+      <>GraphLinq Network © Copyright 2023. All Rights Reserved.</>
     </div>
   );
 };
