@@ -117,25 +117,27 @@ const AddressTransactionResults: FC<AddressAwareComponentProps> = ({
           )}
         </BlockNumberContext.Provider>
         <NavBar address={address} page={page} controller={controller} />
-        <ResultHeader
-          feeDisplay={feeDisplay}
-          feeDisplayToggler={feeDisplayToggler}
-        />
-        {page ? (
-          <>
-            {page.map((tx) => (
-              <TransactionItem
-                key={tx.hash}
-                tx={tx}
-                selectedAddress={address}
-                feeDisplay={feeDisplay}
-              />
-            ))}
-            <NavBar address={address} page={page} controller={controller} />
-          </>
-        ) : (
-          <PendingResults />
-        )}
+        <div className="address-wrapper">
+          <ResultHeader
+            feeDisplay={feeDisplay}
+            feeDisplayToggler={feeDisplayToggler}
+          />
+          {page ? (
+            <>
+              {page.map((tx) => (
+                <TransactionItem
+                  key={tx.hash}
+                  tx={tx}
+                  selectedAddress={address}
+                  feeDisplay={feeDisplay}
+                />
+              ))}
+            </>
+          ) : (
+            <PendingResults />
+          )}
+        </div>
+        <NavBar address={address} page={page} controller={controller} />
       </StandardSelectionBoundary>
     </ContentFrame>
   );
