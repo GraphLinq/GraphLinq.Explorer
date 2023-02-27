@@ -89,7 +89,6 @@ const db = async (app) => {
           const txs = await Promise.all(txPromises);
 
           for (let tx of txs) {
-            console.log(tx)
             let txAlreadyExists = await new Promise((resolve) =>
               app.db.txs.findOne({ hash: tx.hash }, (err, doc) => resolve(doc))
             );

@@ -19,6 +19,7 @@ let routes = [... fs.readdirSync('./api/routes')]
     .map(x => [x, require(`./api/routes/${x}`)])
     .map(x => ({ name: x[0].replace('.js', ''), use: Object.values(x[1])[0], type: 'normal' }));
 
+
 [... routes].forEach(routeUseFunction => {
 	routeUseFunction.use(app);
 

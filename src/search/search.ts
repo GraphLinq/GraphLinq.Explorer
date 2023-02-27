@@ -25,7 +25,6 @@ export const rawToProcessed = (provider: JsonRpcProvider, _rawRes: any) => {
 
   return {
     txs: _res.map((t, i): ProcessedTransaction => {
-      console.log(t)
       // const _rawReceipt = _rawRes.receipts[i];
       // const _receipt = provider.formatter.receipt(_rawReceipt);
       return {
@@ -108,6 +107,29 @@ export class SearchController {
     //   PAGE_SIZE,
     // ]);
     return rawToProcessed(provider, _rawRes);
+  }
+
+  
+ static async readLastTransactions(
+    provider: JsonRpcProvider,
+  ): Promise<TransactionChunk | undefined> {
+
+    let host = `http://localhost:8080`;
+
+    let result = await fetch(`${host}/get-last-transactions`);
+    let _rawRes = (await result.json());
+
+    if (_rawRes.tx !== undefined) {
+
+    // const _rawRes = await provider.send("ots_searchTransactionsAfter", [
+    //   address,
+    //   baseBlock,
+    //   PAGE_SIZE,
+    // ]);
+
+    _rawRes.txs = _rawRes.tx
+    return rawToProcessed(provider, _rawRes);
+    } return undefined;
   }
 
   static async firstPage(
