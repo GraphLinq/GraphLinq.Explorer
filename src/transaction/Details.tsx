@@ -114,7 +114,7 @@ const Details: React.FC<DetailsProps> = ({ txData }) => {
   return (
     <ContentFrame tabs>
       <InfoRow title="Transaction Hash">
-        <div className="flex items-baseline space-x-2">
+        <div className="flex items-center space-x-2">
           <span className="font-hash">{txData.transactionHash}</span>
           <Copy value={txData.transactionHash} />
         </div>

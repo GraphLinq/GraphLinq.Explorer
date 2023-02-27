@@ -1,9 +1,10 @@
-import { FC, memo } from "react";
+import { FC, memo, useContext } from "react";
 import { BlockTag } from "@ethersproject/providers";
 import { BigNumber } from "@ethersproject/bignumber";
 import { commify } from "@ethersproject/units";
 import { useChainInfo } from "../useChainInfo";
-import { useFiatValue } from "../usePriceOracle";
+import { useLatestPrice } from "../useLatestPrice";
+import { RuntimeContext } from "../useRuntime";
 
 const TEN = BigNumber.from(10);
 
@@ -23,15 +24,15 @@ const NativeTokenPrice: FC<NativeTokenPriceProps> = ({ blockTag }) => {
   } = useChainInfo();
 
   // One unit of native token, considering decimals
-  const nativeTokenPrice = useFiatValue(TEN.pow(decimals), blockTag);
-
+  const { provider } = useContext(RuntimeContext);
+  const nativeTokenPrice = useLatestPrice(provider);
   return (
     <span className="text-sm">
       {nativeTokenPrice ? (
         <>
           $
           <span className="font-balance">
-            {commify(nativeTokenPrice.round(2).toString())}
+            {commify(nativeTokenPrice.toFixed(2).toString())}
           </span>
           <span className="text-xs text-gray-500"> / {symbol}</span>
         </>
