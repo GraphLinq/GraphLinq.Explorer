@@ -52,7 +52,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
   return (
     <BlockNumberContext.Provider value={tx.blockNumber}>
       <div
-        className={`grid grid-cols-12 items-center gap-x-1 200 text-sm ${
+        className={`transaction-item grid grid-cols-12 items-center gap-x-1 200 text-sm ${
           flash
             ? "bg-amber-100 hover:bg-amber-200"
             : "hover:bg-skin-table-hover"
