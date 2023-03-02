@@ -13,6 +13,17 @@ type RewardSplitProps = {
   txData: TransactionData;
 };
 
+const parseBigInt = (str: string, base = 16) => {
+  let strN = str.replace('0x', '');
+  let num = 0n;
+  let base2 = BigInt(base);
+  for (const digit of strN) {
+      num *= base2;
+      num += BigInt(parseInt(digit, 16));
+  }
+  return num.toString();
+}
+
 const RewardSplit: React.FC<RewardSplitProps> = ({ txData }) => {
   const { provider } = useContext(RuntimeContext);
   const block = useBlockDataFromTransaction(provider, txData);
@@ -21,8 +32,8 @@ const RewardSplit: React.FC<RewardSplitProps> = ({ txData }) => {
     nativeCurrency: { symbol },
   } = useChainInfo();
   const paidFees = txData.gasPrice.mul(txData.confirmedData!.gasUsed);
-  const burntFees = block
-    ? block.baseFeePerGas!.mul(txData.confirmedData!.gasUsed)
+  const burntFees = block && provider
+    ? provider.formatter.bigNumber(parseBigInt(`${block.baseFeePerGas}`)).mul(txData.confirmedData!.gasUsed)
     : BigNumber.from(0);
 
   const minerReward = paidFees.sub(burntFees);

@@ -388,7 +388,7 @@ const Details: React.FC<DetailsProps> = ({ txData }) => {
               <div>
                 <TransactionFee confirmedData={txData.confirmedData} />
               </div>
-              {/* {hasEIP1559 && <RewardSplit txData={txData} />} */}
+              {hasEIP1559 && <RewardSplit txData={txData} />}
             </div>
           </InfoRow>
           <InfoRow title={`${name} Price`}>
