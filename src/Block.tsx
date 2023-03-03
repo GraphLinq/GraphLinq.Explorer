@@ -141,7 +141,6 @@ const Block: React.FC = () => {
                     <span className="line-through">
                       <FormattedBalance value={burntFees} symbol={symbol} />
                     </span>{" "}
-                    {symbol}
                   </span>
                 </span>
               </div>
