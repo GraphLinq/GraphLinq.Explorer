@@ -355,6 +355,18 @@ color: white;
   }
 }
 
+.address-wrapper > .grid:first-of-type {
+  padding: 8px;
+    border-radius: 8px;
+    background-color: #2923527f;
+}
+@media screen and (max-width: 768px) {
+  .address-wrapper > .grid:first-of-type {
+    padding: 0 0 8px 0;
+      background-color: transparent;
+  }
+}
+
 @media screen and (max-width: 768px) {
   .address-wrapper {
     display: flex;
