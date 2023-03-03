@@ -44,41 +44,45 @@ const RewardSplit: React.FC<RewardSplitProps> = ({ txData }) => {
   return (
     <div className="inline-block">
       <div className="grid grid-cols-2 items-center gap-x-2 gap-y-1 text-sm">
-        <PercentageGauge
+        {/* <PercentageGauge
           perc={burntPerc}
           bgColor="bg-orange-100"
           bgColorPerc="bg-orange-500"
           textColor="text-orange-800"
         />
+        <br></br> */}
         <div className="flex items-baseline space-x-1">
           <span className="flex space-x-1 text-orange-500">
             <span title="Burnt fees">
               <FontAwesomeIcon icon={faBurn} size="1x" />
             </span>
-            <span>
+            <span style={{ whiteSpace: 'nowrap' }}>
               <span className="line-through">
                 <FormattedBalance value={burntFees} />
               </span>{" "}
-              {symbol}
+              {symbol} ({burntPerc}%)
             </span>
           </span>
         </div>
-        <PercentageGauge
+        <br></br>
+        {/* <PercentageGauge
           perc={minerPerc}
           bgColor="bg-amber-100"
           bgColorPerc="bg-amber-300"
           textColor="text-amber-700"
         />
+        <br></br> */}
         <div className="flex items-baseline space-x-1">
           <span className="flex space-x-1">
             <span className="text-amber-300" title="Miner fees">
               <FontAwesomeIcon icon={faCoins} size="1x" />
             </span>
-            <span>
-              <FormattedBalance value={minerReward} symbol={symbol} />
+            <span style={{ whiteSpace: 'nowrap' }}>
+              <FormattedBalance value={minerReward} symbol={symbol} /> ({minerPerc}%)
             </span>
           </span>
         </div>
+        <br></br>
       </div>
     </div>
   );
