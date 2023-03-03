@@ -27,6 +27,17 @@ import { useBlockData } from "./useErigonHooks";
 import { useChainInfo } from "./useChainInfo";
 import Loader from "./components/Loader";
 
+const parseBigInt = (str: string, base = 16) => {
+  let strN = str.replace('0x', '');
+  let num = 0n;
+  let base2 = BigInt(base);
+  for (const digit of strN) {
+      num *= base2;
+      num += BigInt(parseInt(digit, 16));
+  }
+  return num.toString();
+}
+
 const Block: React.FC = () => {
   const { provider } = useContext(RuntimeContext);
   const { blockNumberOrHash } = useParams();
@@ -52,8 +63,8 @@ const Block: React.FC = () => {
       console.info(err);
     }
   }, [block]);
-  const burntFees = 0;//block?.baseFeePerGas && block.baseFeePerGas.mul(block.gasUsed);
-  const gasUsedPerc = 0;//block && block.gasUsed.mul(10000).div(block.gasLimit).toNumber() / 100;
+  const burntFees = block?.baseFeePerGas && provider?.formatter.bigNumber(parseBigInt(`${block.baseFeePerGas}`)).mul(block.gasUsed);
+  const gasUsedPerc = block && provider && provider.formatter.bigNumber(parseBigInt(`${block.gasUsed}`)).mul(10000).div(block.gasLimit).toNumber() / 100;
 
   const latestBlockNumber = useLatestBlockNumber(provider);
 
@@ -119,7 +130,7 @@ const Block: React.FC = () => {
               </span>
             </InfoRow>
           )}
-          {/* {burntFees && (
+          {burntFees && (
             <InfoRow title="Burnt Fees">
               <div className="flex items-baseline space-x-1">
                 <span className="flex space-x-1 text-orange-500">
@@ -128,14 +139,14 @@ const Block: React.FC = () => {
                   </span>
                   <span>
                     <span className="line-through">
-                      <FormattedBalance value={burntFees} />
+                      <FormattedBalance value={burntFees} symbol={symbol} />
                     </span>{" "}
                     {symbol}
                   </span>
                 </span>
               </div>
             </InfoRow>
-          )} */}
+          )}
           <InfoRow title="Gas Used/Limit">
             <div className="flex items-baseline space-x-3">
               <div>
