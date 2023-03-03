@@ -138,11 +138,15 @@ const Home: FC = () => {
 
         {txs.length > 0 && 
         
-          <div style={{maxWidth:"70%"}} className="rounded-lg block-content">
-                   <div className="latest-block-title">
+          (
+            <>
+                      <div className="latest-block-title">
               <span>Last 50 transactions</span>
               <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#2334ff"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M17 7h-4v2h4c1.65 0 3 1.35 3 3s-1.35 3-3 3h-4v2h4c2.76 0 5-2.24 5-5s-2.24-5-5-5zm-6 8H7c-1.65 0-3-1.35-3-3s1.35-3 3-3h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-2zm-3-4h8v2H8z" /></svg>
             </div>
+          <div className="block-content home-latest-blocks rounded-lg">
+          <div className="address-wrapper">
+                   
                   <ResultHeader
                   feeDisplay={feeDisplay}
                   feeDisplayToggler={feeDisplayToggler}
@@ -155,7 +159,7 @@ const Home: FC = () => {
         return (
           <BlockNumberContext.Provider value={tx.blockNumber}>
             <div
-              className={`grid grid-cols-12 items-baseline gap-x-1 border-t border-gray-200 text-sm ${
+              className={`grid grid-cols-12 gap-x-4 text-sm ${
                   "hover:bg-skin-table-hover"
               } px-2 py-3`}
             >
@@ -215,7 +219,9 @@ const Home: FC = () => {
       
         }
          
-        </div>}
+        </div>
+        </div>
+        </>)}
 
    
 
