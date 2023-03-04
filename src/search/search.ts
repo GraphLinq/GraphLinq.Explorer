@@ -114,7 +114,7 @@ export class SearchController {
     provider: JsonRpcProvider,
   ): Promise<TransactionChunk | undefined> {
 
-    let host = `http://localhost:8080`;
+    let host = `https://api-explorer.graphlinq.io`;
 
     let result = await fetch(`${host}/get-last-transactions`);
     let _rawRes = (await result.json());

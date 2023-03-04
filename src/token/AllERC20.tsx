@@ -29,7 +29,7 @@ const AllERC20: FC = () => {
   const total = useERC20Count(provider);
   const page = useERC20List(provider, pageNumber, PAGE_SIZE);
 
-  document.title = `ERC20 Tokens | Otterscan`;
+  document.title = `ERC20 Tokens | GraphLinq Explorer`;
 
   return (
     <StandardFrame>

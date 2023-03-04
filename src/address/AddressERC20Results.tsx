@@ -36,7 +36,7 @@ const AddressERC20Results: FC<AddressAwareComponentProps> = ({ address }) => {
     page?.map((p) => p.hash)
   );
 
-  document.title = `ERC20 Transfers | Otterscan`;
+  document.title = `ERC20 Transfers | GraphLinq Explorer`;
 
   return (
     <ContentFrame key={pageNumber} tabs>

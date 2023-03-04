@@ -27,7 +27,7 @@ const Transaction: FC = () => {
 
   useEffect(() => {
     if (txData) {
-      document.title = `Transaction ${txData.transactionHash} | Otterscan`;
+      document.title = `Transaction ${txData.transactionHash} | GraphLinq Explorer`;
     }
   }, [txData]);
 

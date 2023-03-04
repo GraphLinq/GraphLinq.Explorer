@@ -27,7 +27,7 @@ const Overview: FC = () => {
   const { slot, error, isLoading } = useSlot(slotAsNumber);
   useEffect(() => {
     if (slot !== undefined) {
-      document.title = `Slot #${slotNumber} | Otterscan`;
+      document.title = `Slot #${slotNumber} | GraphLinq Explorer`;
     }
   }, [slotNumber, slot]);
 

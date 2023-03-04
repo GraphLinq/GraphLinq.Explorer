@@ -20,7 +20,7 @@ const Overview: FC<OverviewProps> = ({ validatorIndex }) => {
 
   useEffect(() => {
     if (validator !== undefined) {
-      document.title = `Validator #${validator.data.index} | Otterscan`;
+      document.title = `Validator #${validator.data.index} | GraphLinq Explorer`;
     }
   }, [validatorIndex, validator]);
 

@@ -40,7 +40,7 @@ const Block: React.FC = () => {
   const block = useBlockData(provider, blockNumberOrHash);
   useEffect(() => {
     if (block !== undefined) {
-      document.title = `Block #${blockNumberOrHash} | Otterscan`;
+      document.title = `Block #${blockNumberOrHash} | GraphLinq Explorer`;
     }
   }, [blockNumberOrHash, block]);
 

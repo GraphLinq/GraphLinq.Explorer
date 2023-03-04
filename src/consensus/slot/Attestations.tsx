@@ -15,7 +15,7 @@ const Attestations: FC = () => {
   const { slot, error, isLoading } = useSlot(slotAsNumber);
   useEffect(() => {
     if (slot !== undefined) {
-      document.title = `Attestations for #${slotNumber} | Otterscan`;
+      document.title = `Attestations for #${slotNumber} | GraphLinq Explorer`;
     }
   }, [slotNumber, slot]);
 

@@ -29,7 +29,7 @@ const AllERC721: FC = () => {
   const total = useERC721Count(provider);
   const page = useERC721List(provider, pageNumber, PAGE_SIZE);
 
-  document.title = `ERC721 Tokens | Otterscan`;
+  document.title = `ERC721 Tokens | GraphLinq Explorer`;
 
   return (
     <StandardFrame>

@@ -29,7 +29,7 @@ const AllContracts: FC = () => {
   const total = useContractsCount(provider);
   const page = useContractsList(provider, pageNumber, PAGE_SIZE);
 
-  document.title = `All contracts | Otterscan`;
+  document.title = `All contracts | GraphLinq Explorer`;
 
   return (
     <StandardFrame>

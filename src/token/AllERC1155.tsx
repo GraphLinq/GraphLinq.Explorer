@@ -29,7 +29,7 @@ const AllERC1155: FC = () => {
   const total = useERC1155Count(provider);
   const page = useERC1155List(provider, pageNumber, PAGE_SIZE);
 
-  document.title = `ERC1155 Tokens | Otterscan`;
+  document.title = `ERC1155 Tokens | GraphLinq Explorer`;
 
   return (
     <StandardFrame>
