@@ -10,7 +10,7 @@ const ResultHeader: React.FC<ResultHeaderProps> = ({
   feeDisplay,
   feeDisplayToggler,
 }) => (
-  <div className="grid grid-cols-12 gap-x-1 text-sm font-bold">
+  <div className="grid grid-cols-12 gap-x-4 text-sm font-bold pb-2">
     <div className="col-span-2">Txn Hash</div>
     <div>Method</div>
     <div>Block</div>
