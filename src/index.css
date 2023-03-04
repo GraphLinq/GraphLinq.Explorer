@@ -416,11 +416,15 @@ color: white;
 *::-webkit-scrollbar-thumb{background-color:#2334ff;}
 
 .home-latest-blocks {
-  max-width: 1000px;
+  max-width: 1280px;
   padding-bottom: 0;
 }
 @media screen and (max-width: 768px) {
   .home-latest-blocks {
     max-width: calc(100% - 40px);
   }
+}
+
+.flex-inline {
+  display: inline-flex;
 }
