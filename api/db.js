@@ -66,7 +66,7 @@ const db = async (app) => {
         const results = await Promise.all(promises);
 
         for (let block of results) {
-          if (isNaN(block.number)) {
+          if (block == undefined || isNaN(block.number)) {
             throw new Error(
               `Invalid block ${block.number} from the RPC node, it may be down or flooded`
             );
