@@ -108,11 +108,15 @@ const db = async (app) => {
 
     app.db.inProgress = false;
 
-    await processBlocks();
+    try {
+      await processBlocks();
+    } catch (e2) { }
   };
 
 
- await processBlocks();
+  try {
+    await processBlocks();
+  } catch (e) { }
 };
 
 module.exports = {
