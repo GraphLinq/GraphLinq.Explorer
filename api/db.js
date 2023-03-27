@@ -34,7 +34,7 @@ const db = async (app) => {
     } catch (e) {
       app.db.inProgress = false;
       setTimeout(async () => {
-        console.log(`${(new Date()).toString()} retry process db - getBlockNumber`);
+        console.log(`${(new Date()).toString()} retry process db - getBlockNumber`, e);
         await processBlocks();
       }, 1000);
       return ;
