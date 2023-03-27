@@ -28,8 +28,17 @@ const db = async (app) => {
       return;
     }
     app.db.inProgress = true;
-    const latest = await web3.eth.getBlockNumber();
-    app.latestBlockNumber = +latest.toString();
+    try {
+      const latest = await web3.eth.getBlockNumber();
+      app.latestBlockNumber = +latest.toString();
+    } catch (e) {
+      app.db.inProgress = false;
+      setTimeout(async () => {
+        console.log(`${(new Date()).toString()} retry process db - getBlockNumber`);
+        await processBlocks();
+      }, 1000);
+      return ;
+    }
 
     if (isNaN(app.db.currentBlock)) {
       throw new Error(`Invalid block saved in .block database file...`);
@@ -108,15 +117,17 @@ const db = async (app) => {
 
     app.db.inProgress = false;
 
-    try {
-      await processBlocks();
-    } catch (e2) { }
+    setTimeout(async () => { // async sub processBlocks
+      try {
+        await processBlocks();
+      } catch (e) { console.log('processBlocks failed'); }
+    }, 1);
   };
 
 
   try {
     await processBlocks();
-  } catch (e) { }
+  } catch (e) { console.log('processBlocks failed'); }
 };
 
 module.exports = {
