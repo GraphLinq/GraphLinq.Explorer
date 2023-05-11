@@ -9,7 +9,7 @@ const { get } = require('http');
 
 async function getLastTxs(app) {
     return new Promise((resolve,rej) => {
-        app.db.txs.find({}).sort({ blockNumber: { $gt: app.db.currentBlock - 5000 } }).exec((err, docs) => resolve(docs));
+        app.db.txs.find({ blockNumber: { $gt: app.db.currentBlock - 5000 } }).sort({ blockNumber: -1 }).exec((err, docs) => resolve(docs));
     })
 }
 
