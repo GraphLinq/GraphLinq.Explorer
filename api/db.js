@@ -68,7 +68,7 @@ const db = async (app) => {
         for (let block of results) {
           if (block == undefined || isNaN(block.number)) {
             throw new Error(
-              `Invalid block ${block.number} from the RPC node, it may be down or flooded`
+              `Invalid block or block Numer from the RPC node, it may be down or flooded`
             );
           }
 
