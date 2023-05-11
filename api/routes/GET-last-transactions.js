@@ -7,6 +7,12 @@ const web3 = new Web3('https://glq-dataseed.graphlinq.io');
 const Datastore = require('nedb');
 const { get } = require('http');
 
+async function getLastTxs(app) {
+    return new Promise((resolve,rej) => {
+        app.db.txs.find({}).sort({ blockNumber: { $gt: app.db.currentBlock - 5000 } }).exec((err, docs) => resolve(docs));
+    })
+}
+
 const getValidator = (app) => {
     app['get-last-transactions'] = async (req, res, headers) => {
         res.writeHead(200, {
@@ -15,7 +21,7 @@ const getValidator = (app) => {
         });
         if (app.db !== undefined && app.db.txs !== undefined) {
 
-            const last50 = (await app.db.txs.find({ blockNumber: { $gt: app.db.currentBlock - 5000 } }).sort({ blockNumber: -1 }).exec((err, docs) => resolve(docs))).slice(0, 50);
+            const last50 = (await getLastTxs(app)).slice(0, 50);
             // const last50 = app.db.txs.slice(0, 50);
             res.end(JSON.stringify({
                 tx: last50
