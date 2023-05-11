@@ -14,7 +14,9 @@ const getValidator = (app) => {
             'Content-Type': 'application/json'
         });
         if (app.db !== undefined && app.db.txs !== undefined) {
-            const last50 = app.db.txs.slice(0, 50);
+
+            const last50 = (await app.db.txs.find({ blockNumber: { $gt: app.db.currentBlock - 5000 } }).sort({ blockNumber: -1 }).exec((err, docs) => resolve(docs))).slice(0, 50);
+            // const last50 = app.db.txs.slice(0, 50);
             res.end(JSON.stringify({
                 tx: last50
             }));
