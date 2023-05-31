@@ -23,7 +23,7 @@ const getValidator = (app) => {
         if (app.db !== undefined) {
             const last50 = (await getLastTxs(app));
             res.end(JSON.stringify({
-                tx: last50 ? last50.data : []
+                tx: last50 ? last50.data.reverse() : []
             }));
         } else {
             res.end(JSON.stringify({
