@@ -23,7 +23,7 @@ const getAccountTxs = (app) => {
             'Content-Type': 'application/json'
         });
         res.end(JSON.stringify({
-            txs: account ? account.txs : []
+            txs: account ? account.txs.reverse() : []
         }));
     };
 };

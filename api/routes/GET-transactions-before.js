@@ -24,7 +24,7 @@ const getAccountTxs = (app) => {
         });
         
         res.end(JSON.stringify({
-            txs: account ? account.txs : []
+            txs: account ? account.txs.reverse() : []
         }));
     };
 };
