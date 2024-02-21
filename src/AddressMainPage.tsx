@@ -86,9 +86,9 @@ const AddressMainPage: React.FC<AddressMainPageProps> = () => {
                 <NavTab href={`/address/${addressOrName}`}>Overview</NavTab>
                 {config?.experimental && (
                   <>
-                    <NavTab href={`/address/${addressOrName}/erc20`}>
+                    {/* <NavTab href={`/address/${addressOrName}/erc20`}>
                       ERC20 Transfers
-                    </NavTab>
+                    </NavTab> */}
                     <NavTab href={`/address/${addressOrName}/tokens`}>
                       Token Balances
                     </NavTab>

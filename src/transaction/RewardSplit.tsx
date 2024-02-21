@@ -65,13 +65,13 @@ const RewardSplit: React.FC<RewardSplitProps> = ({ txData }) => {
           </span>
         </div>
         <br></br>
-        {/* <PercentageGauge
+        <PercentageGauge
           perc={minerPerc}
           bgColor="bg-amber-100"
           bgColorPerc="bg-amber-300"
           textColor="text-amber-700"
         />
-        <br></br> */}
+        <br></br>
         <div className="flex items-baseline space-x-1">
           <span className="flex space-x-1">
             <span className="text-amber-300" title="Miner fees">

@@ -17,12 +17,16 @@ import { useParams, useSearchParams } from "react-router-dom";
 import { ProcessedTransaction } from "../types";
 import { useAddressBalance, useContractCreator } from "../useErigonHooks";
 import { BlockNumberContext } from "../useBlockTagContext";
+import { useConfig } from "../useConfig";
+import ERC20Item from "../token/ERC20Item";
+import { useTokenSet } from "../kleros/useTokenList";
 
 const AddressTransactionResults: FC<AddressAwareComponentProps> = ({
   address,
 }) => {
   const { provider } = useContext(RuntimeContext);
   const [feeDisplay, feeDisplayToggler] = useFeeToggler();
+  const config = useConfig();
 
   const { addressOrName, direction } = useParams();
   if (addressOrName === undefined) {
@@ -39,7 +43,7 @@ const AddressTransactionResults: FC<AddressAwareComponentProps> = ({
     }
 
     const readFirstPage = async () => {
-      const _controller = await SearchController.firstPage(provider, address);
+      const _controller = await SearchController.firstPage(provider, address, config);
       setController(_controller);
     };
     const readMiddlePage = async (next: boolean) => {
@@ -47,20 +51,21 @@ const AddressTransactionResults: FC<AddressAwareComponentProps> = ({
         provider,
         address,
         hash!,
-        next
+        next,
+        config
       );
       setController(_controller);
     };
     const readLastPage = async () => {
-      const _controller = await SearchController.lastPage(provider, address);
+      const _controller = await SearchController.lastPage(provider, address, config);
       setController(_controller);
     };
     const prevPage = async () => {
-      const _controller = await controller!.prevPage(provider, hash!);
+      const _controller = await controller!.prevPage(provider, hash!, config);
       setController(_controller);
     };
     const nextPage = async () => {
-      const _controller = await controller!.nextPage(provider, hash!);
+      const _controller = await controller!.nextPage(provider, hash!, config);
       setController(_controller);
     };
 
@@ -93,6 +98,8 @@ const AddressTransactionResults: FC<AddressAwareComponentProps> = ({
   const balance = useAddressBalance(provider, address);
   const creator = useContractCreator(provider, address);
 
+  const isToken = useTokenSet(provider?.network.chainId)?.has(address);
+
   return (
     <ContentFrame tabs>
       <StandardSelectionBoundary>
@@ -101,6 +108,9 @@ const AddressTransactionResults: FC<AddressAwareComponentProps> = ({
             <InfoRow title="Balance">
               <AddressBalance balance={balance} />
             </InfoRow>
+          )}
+          {isToken && (
+            <ERC20Item key={address} m={{ address: address, blockNumber: 0 }} />
           )}
           {creator && (
             <InfoRow title="Contract creator">

@@ -26,6 +26,8 @@ import erc20 from "./erc20.json";
 import erc721md from "./erc721metadata.json";
 import { rawToProcessed } from "./search/search";
 import { BlockHeader } from '@ethereumjs/block';
+import { useConfig } from "./useConfig";
+import { ethers } from "ethers";
 
 const TRANSFER_TOPIC =
   "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
@@ -79,7 +81,8 @@ export const readBlock = async (
   let validator = undefined;
 
   try {
-    let host = `https://api-explorer.graphlinq.io`;
+    let config = useConfig();
+    let host = config?.apiURL;
     let validatorResult = await fetch(`${host}/get-validator?block-number=${_rawBlock.number}`);
     validator = (await validatorResult.json()).validator;
   } catch (e) {}
@@ -800,12 +803,17 @@ export const useERC20List = (
   pageNumber: number,
   pageSize: number
 ): ContractMatch[] | undefined => {
-  return useGenericContractList(
-    provider,
-    "ots_getERC20Page",
-    pageNumber,
-    pageSize
-  );
+  
+  return [{
+    blockNumber: 0,
+    address: "0x806a6aE0E70fc55eB16605a64BEfe887ce05c435"
+  }];
+  // return useGenericContractList(
+  //   provider,
+  //   "ots_getERC20Page",
+  //   pageNumber,
+  //   pageSize
+  // );
 };
 
 export const useERC721Count = (
@@ -997,22 +1005,24 @@ const erc20MetadataFetcher =
     if (provider === undefined) {
       return null;
     }
-
     const contract = ERC20_PROTOTYPE.connect(provider).attach(address);
     try {
-      const [name, symbol, decimals] = await Promise.allSettled([
-        contract.name({ blockTag: blockNumber + 1 }),
-        contract.symbol({ blockTag: blockNumber + 1 }),
-        contract.decimals({ blockTag: blockNumber + 1 }),
+      const [name, symbol, decimals, totalSupply] = await Promise.allSettled([
+        contract.name(),
+        contract.symbol(),
+        contract.decimals(),
+        contract.totalSupply()
       ]);
+
+      const decimalsValue = decimals.status === "fulfilled"
+      ? (decimals.value as number)
+      : undefined;
 
       return {
         name: name.status === "fulfilled" ? (name.value as string) : "",
         symbol: symbol.status === "fulfilled" ? (symbol.value as string) : "",
-        decimals:
-          decimals.status === "fulfilled"
-            ? (decimals.value as number)
-            : undefined,
+        decimals: decimalsValue,
+        totalSupply: totalSupply.status === "fulfilled" ? ethers.utils.formatUnits(totalSupply.value, decimalsValue) : "",
       };
     } catch (err) {
       // Ignore on purpose; this indicates the probe failed and the address
@@ -1027,21 +1037,15 @@ export type ERC20Metadata = {
   decimals: number | undefined;
 };
 
-export const useERC20Metadata = (
+export const useERC20Metadata = async (
   provider: JsonRpcProvider | undefined,
   address: ChecksummedAddress | undefined,
   blockNumber: number | undefined
-): ERC20Metadata | undefined | null => {
+): Promise<ERC20Metadata | undefined | null> => {
   const fetcher = erc20MetadataFetcher(provider);
-  const { data, error } = useSWRImmutable(
-    provider !== undefined && address !== undefined && blockNumber !== undefined
-      ? ["erc20meta", address, blockNumber]
-      : null,
-    fetcher
-  );
-  if (error) {
-    return undefined;
-  }
+  const data = await fetcher(["erc20meta", `${address}`, Number(`${blockNumber}`)]);
+  console.log(data);
+  // console.log(provider !== undefined && address !== undefined && blockNumber !== undefined);
   return data;
 };
 
@@ -1050,19 +1054,19 @@ export const useERC20Holdings = (
   address: ChecksummedAddress
 ): ChecksummedAddress[] | undefined => {
   const fetcher = providerFetcher(provider);
-  const { data, error } = useSWR(["ots_getERC20Holdings", address], fetcher);
-  const converted = useMemo(() => {
-    if (error) {
-      return undefined;
-    }
+  // const { data, error } = useSWR(["ots_getERC20Holdings", address], fetcher);
+  // const converted = useMemo(() => {
+  //   if (error) {
+  //     return undefined;
+  //   }
 
-    if (data === undefined || data === null) {
-      return undefined;
-    }
-    return (data as any[]).map((m) => m.address);
-  }, [data, error]);
+  //   if (data === undefined || data === null) {
+  //     return undefined;
+  //   }
+  //   return (data as any[]).map((m) => m.address);
+  // }, [data, error]);
 
-  return converted;
+  return [];
 };
 
 const erc20BalanceFetcher =

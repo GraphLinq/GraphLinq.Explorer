@@ -14,7 +14,7 @@ import { useTokenSet } from "../kleros/useTokenList";
 
 const AddressTokens: FC<AddressAwareComponentProps> = ({ address }) => {
   const { provider } = useContext(RuntimeContext);
-  const erc20List = useERC20Holdings(provider, address);
+  const erc20List = [address]//useERC20Holdings(provider, address);
 
   const [enabled, setEnabled] = useState<boolean>(true);
   const tokenSet = useTokenSet(provider?.network.chainId);

@@ -8,6 +8,7 @@ export type OtterscanConfig = {
   beaconAPI?: string;
   assetsURLPrefix?: string;
   experimental?: boolean;
+  apiURL?: string;
   coingeckoPriceUrl?: string;
 };
 

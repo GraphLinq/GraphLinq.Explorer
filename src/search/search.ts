@@ -12,6 +12,7 @@ import { isHexString } from "@ethersproject/bytes";
 import useKeyboardShortcut from "use-keyboard-shortcut";
 import { PAGE_SIZE } from "../params";
 import { ProcessedTransaction, TransactionChunk } from "../types";
+import { useConfig } from "../useConfig";
 
 export const rawToProcessed = (provider: JsonRpcProvider, _rawRes: any) => {
   const _res: TransactionResponse[] = [];
@@ -74,11 +75,11 @@ export class SearchController {
   private static async readBackPage(
     provider: JsonRpcProvider,
     address: string,
-    baseBlock: number
+    baseBlock: number,
+    config: any
   ): Promise<TransactionChunk> {
 
-
-    const host = `https://api-explorer.graphlinq.io`;
+    const host = config?.apiURL;
     let result = await fetch(`${host}/get-transactions-before?address=${address}&baseblock=${baseBlock}&size=${PAGE_SIZE}`);
     
     const _rawRes = (await result.json());
@@ -93,10 +94,10 @@ export class SearchController {
   private static async readForwardPage(
     provider: JsonRpcProvider,
     address: string,
-    baseBlock: number
+    baseBlock: number,
+    config: any
   ): Promise<TransactionChunk> {
-
-    let host = `https://api-explorer.graphlinq.io`;
+    const host = config?.apiURL;
 
     let result = await fetch(`${host}/get-transactions-after?address=${address}&baseblock=${baseBlock}&size=${PAGE_SIZE}`);
     const _rawRes = (await result.json());
@@ -112,9 +113,10 @@ export class SearchController {
   
  static async readLastTransactions(
     provider: JsonRpcProvider,
+    config: any
   ): Promise<TransactionChunk | undefined> {
 
-    let host = `https://api-explorer.graphlinq.io`;
+    const host = config?.apiURL;
 
     let result = await fetch(`${host}/get-last-transactions`);
     let _rawRes = (await result.json());
@@ -134,9 +136,10 @@ export class SearchController {
 
   static async firstPage(
     provider: JsonRpcProvider,
-    address: string
+    address: string,
+    config: any
   ): Promise<SearchController> {
-    const newTxs = await SearchController.readBackPage(provider, address, 0);
+    const newTxs = await SearchController.readBackPage(provider, address, 0, config);
     return new SearchController(
       address,
       newTxs.txs,
@@ -150,15 +153,17 @@ export class SearchController {
     provider: JsonRpcProvider,
     address: string,
     hash: string,
-    next: boolean
+    next: boolean,
+    config: any
   ): Promise<SearchController> {
     const tx = await provider.getTransaction(hash);
     const newTxs = next
-      ? await SearchController.readBackPage(provider, address, tx.blockNumber!)
+      ? await SearchController.readBackPage(provider, address, tx.blockNumber!, config)
       : await SearchController.readForwardPage(
           provider,
           address,
-          tx.blockNumber!
+          tx.blockNumber!,
+          config
         );
     return new SearchController(
       address,
@@ -171,9 +176,10 @@ export class SearchController {
 
   static async lastPage(
     provider: JsonRpcProvider,
-    address: string
+    address: string,
+    config: any
   ): Promise<SearchController> {
-    const newTxs = await SearchController.readForwardPage(provider, address, 0);
+    const newTxs = await SearchController.readForwardPage(provider, address, 0, config);
     return new SearchController(
       address,
       newTxs.txs,
@@ -189,7 +195,8 @@ export class SearchController {
 
   async prevPage(
     provider: JsonRpcProvider,
-    hash: string
+    hash: string,
+    config: any
   ): Promise<SearchController> {
     // Already on this page
     if (this.txs[this.pageEnd - 1].hash === hash) {
@@ -202,7 +209,8 @@ export class SearchController {
       const prevPage = await SearchController.readForwardPage(
         provider,
         this.address,
-        baseBlock
+        baseBlock,
+        config
       );
       return new SearchController(
         this.address,
@@ -218,7 +226,8 @@ export class SearchController {
 
   async nextPage(
     provider: JsonRpcProvider,
-    hash: string
+    hash: string,
+    config: any
   ): Promise<SearchController> {
     // Already on this page
     if (this.txs[this.pageStart].hash === hash) {
@@ -231,7 +240,8 @@ export class SearchController {
       const nextPage = await SearchController.readBackPage(
         provider,
         this.address,
-        baseBlock
+        baseBlock,
+        config
       );
       return new SearchController(
         this.address,

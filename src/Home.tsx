@@ -36,6 +36,7 @@ import TransactionAddressHome from "./components/TransactionAddressHome";
 import TransactionAddress from "./components/TransactionAddress";
 import { BlockNumberContext } from "./useBlockTagContext";
 import StandardSelectionBoundary from "./selection/StandardSelectionBoundary"
+import { useConfig } from "./useConfig";
 
 const CameraScanner = lazy(() => import("./search/CameraScanner"));
 
@@ -63,11 +64,12 @@ const Home: FC = () => {
   const finalizedSlotNumber = useFinalizedSlotNumber();
   const slotTime = useSlotTimestamp(finalizedSlotNumber);
   const [isScanning, setScanning] = useState<boolean>(false);
-  const [txs, setTxs] = useState([])
+  const [txs, setTxs] = useState([]);
+  const config = useConfig();
 
   useEffect(() => {
     if (provider === undefined) return;
-    SearchController.readLastTransactions(provider).then((res: any) => {
+    SearchController.readLastTransactions(provider, config).then((res: any) => {
       if (res.txs) {
         setTxs(res.txs)
       }

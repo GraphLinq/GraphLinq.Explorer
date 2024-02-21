@@ -1,4 +1,4 @@
-import { FC, memo, useContext } from "react";
+import { FC, memo, useContext, useEffect, useState } from "react";
 import DecoratedAddressLink from "../components/DecoratedAddressLink";
 import BlockLink from "../components/BlockLink";
 import TimestampAge from "../components/TimestampAge";
@@ -9,43 +9,32 @@ import {
   useBlockData,
   useERC20Metadata,
 } from "../useErigonHooks";
+import InfoRow from "../components/InfoRow";
 
 type ERC20temProps = {
   m: ContractMatch;
 };
 
-const ERC20Item: FC<ERC20temProps> = ({ m: { address, blockNumber } }) => {
+const ERC20Item: FC<ERC20temProps> = ({ m: { address } }) => {
   const { provider } = useContext(RuntimeContext);
-  const erc20meta = useERC20Metadata(provider, address, blockNumber);
-  const block = useBlockData(provider, blockNumber.toString());
+  const [erc20meta, setErc20Meta] = useState<any>(undefined);
+
+  useEffect(() => {
+    if (provider && erc20meta === undefined) {
+      useERC20Metadata(provider, address, 0).then(setErc20Meta);
+    }
+  });
 
   return (
-    <tr>
-      <td>
-        <DecoratedAddressLink address={address} plain />
-      </td>
-      <td>
-        <BlockLink blockTag={blockNumber} />
-      </td>
-      <td>{block && <TimestampAge timestamp={block.timestamp} />}</td>
-      {erc20meta ? (
-        <>
-          <td>
-            <CanBeEmptyText text={erc20meta.name} />
-          </td>
-          <td>
-            <CanBeEmptyText text={erc20meta.symbol} />
-          </td>
-          <td>{erc20meta.decimals}</td>
-        </>
-      ) : (
-        <>
-          <td></td>
-          <td></td>
-          <td></td>
-        </>
-      )}
-    </tr>
+    <>
+    { erc20meta && (<>
+      <InfoRow title="Type">ERC20 Token</InfoRow>
+      <InfoRow title="Name"><CanBeEmptyText text={erc20meta.name} /></InfoRow>
+      <InfoRow title="Symbol"><CanBeEmptyText text={erc20meta.symbol} /></InfoRow>
+      <InfoRow title="Decimals">{ erc20meta.decimals }</InfoRow>
+      <InfoRow title="TotalSupply">{ erc20meta.totalSupply }</InfoRow>
+    </>)}
+    </>
   );
 };
 
