@@ -10,29 +10,29 @@ import StandardTBody from "../components/StandardTBody";
 import TokenBalance from "./TokenBalance";
 import { RuntimeContext } from "../useRuntime";
 import { useERC20Holdings } from "../useErigonHooks";
-import { useTokenSet } from "../kleros/useTokenList";
+import { getWhitelistedTokenSet, useTokenSet } from "../kleros/useTokenList";
 
 const AddressTokens: FC<AddressAwareComponentProps> = ({ address }) => {
   const { provider } = useContext(RuntimeContext);
-  const erc20List = [address]//useERC20Holdings(provider, address);
+  // const erc20List = [address]//useERC20Holdings(provider, address);
 
   const [enabled, setEnabled] = useState<boolean>(true);
-  const tokenSet = useTokenSet(provider?.network.chainId);
-  const filteredList = useMemo(() => {
-    if (erc20List === undefined) {
-      return undefined;
-    }
-    return erc20List.filter((t) => tokenSet.has(getAddress(t)));
-  }, [erc20List, tokenSet]);
-  const tokenList = enabled ? filteredList : erc20List;
+  const tokenSet = getWhitelistedTokenSet()//useTokenSet(provider?.network.chainId);
+  // const filteredList = useMemo(() => {
+  //   if (erc20List === undefined) {
+  //     return undefined;
+  //   }
+  //   return erc20List.filter((t) => tokenSet.has(getAddress(t)));
+  // }, [erc20List, tokenSet]);
+  // const tokenList = tokenSet;//enabled ? filteredList : erc20List;
 
   return (
     <ContentFrame tabs>
-      {erc20List && filteredList && tokenList && (
+      {tokenSet && (
         <StandardSelectionBoundary>
           <TotalBar
-            erc20List={erc20List}
-            filteredList={filteredList}
+            erc20List={tokenSet.map((t) => t.address)}
+            filteredList={tokenSet}
             filterApplied={enabled}
             applyFilter={setEnabled}
           />
@@ -42,18 +42,18 @@ const AddressTokens: FC<AddressAwareComponentProps> = ({ address }) => {
               <th>Balance</th>
             </StandardTHead>
             <StandardTBody>
-              {tokenList.map((t) => (
+              {tokenSet.map((t) => (
                 <TokenBalance
-                  key={t}
+                  key={t.address}
                   holderAddress={address}
-                  tokenAddress={t}
+                  tokenAddress={t.address}
                 />
               ))}
             </StandardTBody>
           </StandardTable>
           <TotalBar
-            erc20List={erc20List}
-            filteredList={filteredList}
+            erc20List={tokenSet}
+            filteredList={tokenSet}
             filterApplied={enabled}
             applyFilter={setEnabled}
           />

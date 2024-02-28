@@ -30,8 +30,8 @@ const TransactionAddressHome: FC<TransactionAddressProps> = ({
   const _creation =
     creation || address === txData?.confirmedData?.createdContractAddress;
 
-  const { provider } = useContext(RuntimeContext);
-  const block = useBlockDataFromTransaction(provider, txData);
+  const { provider, config } = useContext(RuntimeContext);
+  const block = useBlockDataFromTransaction(provider, config, txData);
 
   const blockNumber = useBlockNumberContext();
   const hasCode = useHasCode(

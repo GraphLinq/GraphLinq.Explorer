@@ -15,3 +15,7 @@ export const useTokenSet = (
 
   return res;
 };
+
+export const getWhitelistedTokenSet = (): any[] => {
+  return t2crtokens.tokens;
+};

@@ -25,37 +25,38 @@ const useGenesisURL = () => {
 };
 
 export const useGenesisTime = (): number | undefined => {
-  const url = useGenesisURL();
-  const { data, error } = useSWRImmutable(url, jsonFetcher);
+  return undefined;
+  // const url = useGenesisURL();
+  // const { data, error } = useSWRImmutable(url, jsonFetcher);
 
-  if (!error && !data) {
-    return undefined;
-  }
-  if (error) {
-    return undefined;
-  }
+  // if (!error && !data) {
+  //   return undefined;
+  // }
+  // if (error) {
+  //   return undefined;
+  // }
 
-  if (typeof data !== "object" || data === null) {
-    return undefined;
-  }
-  if (
-    !("data" in data) ||
-    typeof data.data !== "object" ||
-    data.data === null
-  ) {
-    return undefined;
-  }
-  if (
-    !("genesis_time" in data.data) ||
-    typeof data.data.genesis_time !== "string"
-  ) {
-    return undefined;
-  }
-  const genesisTime = parseInt(data.data.genesis_time);
-  if (isNaN(genesisTime)) {
-    return undefined;
-  }
-  return genesisTime;
+  // if (typeof data !== "object" || data === null) {
+  //   return undefined;
+  // }
+  // if (
+  //   !("data" in data) ||
+  //   typeof data.data !== "object" ||
+  //   data.data === null
+  // ) {
+  //   return undefined;
+  // }
+  // if (
+  //   !("genesis_time" in data.data) ||
+  //   typeof data.data.genesis_time !== "string"
+  // ) {
+  //   return undefined;
+  // }
+  // const genesisTime = parseInt(data.data.genesis_time);
+  // if (isNaN(genesisTime)) {
+  //   return undefined;
+  // }
+  // return genesisTime;
 };
 
 const useBeaconHeaderURL = (tag: string) => {
@@ -287,16 +288,17 @@ const useDynamicHeader = (
   tag: "finalized" | "head",
   refreshInterval: number = 1000
 ) => {
-  const url = useBeaconHeaderURL(tag);
-  const { data, error } = useSWR(url, jsonFetcher, {
-    refreshInterval,
-  });
+  return undefined;
+  // const url = useBeaconHeaderURL(tag);
+  // const { data, error } = useSWR(url, jsonFetcher, {
+  //   refreshInterval,
+  // });
 
-  if (error) {
-    console.error(error);
-    return undefined;
-  }
-  return data;
+  // if (error) {
+  //   console.error(error);
+  //   return undefined;
+  // }
+  // return data;
 };
 
 const parseSlotNumber = (slot: unknown): number | undefined => {

@@ -58,8 +58,8 @@ type DetailsProps = {
 };
 
 const Details: React.FC<DetailsProps> = ({ txData }) => {
-  const { provider } = useContext(RuntimeContext);
-  const block = useBlockDataFromTransaction(provider, txData);
+  const { provider, config } = useContext(RuntimeContext);
+  const block = useBlockDataFromTransaction(provider, config, txData);
 
   const hasEIP1559 =
     block?.baseFeePerGas !== undefined && block?.baseFeePerGas !== null;
@@ -81,15 +81,15 @@ const Details: React.FC<DetailsProps> = ({ txData }) => {
 
   const tokenTransfers = useTokenTransfers(txData);
 
-  const match = useSourcifyMetadata(txData?.to, provider?.network.chainId);
-  const metadata = match?.metadata;
+  const match = undefined;//useSourcifyMetadata(txData?.to, provider?.network.chainId);
+  const metadata = undefined;//match?.metadata;
 
   const txDesc = useSourcifyTransactionDescription(metadata, txData);
-  const userDoc = metadata?.output.userdoc;
-  const devDoc = metadata?.output.devdoc;
+  const userDoc = metadata//?.output.userdoc;
+  const devDoc = undefined;//metadata?.output.devdoc;
   const resolvedTxDesc = txDesc ?? fourBytesTxDesc;
-  const userMethod = txDesc ? userDoc?.methods[txDesc.signature] : undefined;
-  const devMethod = txDesc ? devDoc?.methods[txDesc.signature] : undefined;
+  const userMethod = undefined;//txDesc ? userDoc?.methods[txDesc.signature] : undefined;
+  const devMethod = undefined;//txDesc ? devDoc?.methods[txDesc.signature] : undefined;
 
   const {
     nativeCurrency: { name, symbol },
@@ -103,12 +103,12 @@ const Details: React.FC<DetailsProps> = ({ txData }) => {
     metadata,
     isCustomError ? outputData : undefined
   );
-  const userError = errorDescription
-    ? userDoc?.errors?.[errorDescription.signature]?.[0]
-    : undefined;
-  const devError = errorDescription
-    ? devDoc?.errors?.[errorDescription.signature]?.[0]
-    : undefined;
+  const userError = undefined;//errorDescription
+    //? userDoc?.errors?.[errorDescription.signature]?.[0]
+    //: undefined;
+  const devError = undefined;//errorDescription
+    //? devDoc?.errors?.[errorDescription.signature]?.[0]
+    //: undefined;
   const [expanded, setExpanded] = useState<boolean>(false);
 
   return (

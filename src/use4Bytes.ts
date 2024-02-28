@@ -39,43 +39,7 @@ type FourBytesFetcher = Fetcher<
 const fourBytesFetcher =
   (assetsURLPrefix: string): FourBytesFetcher =>
   async ([_, key]) => {
-    if (key === null || key === "0x") {
-      return undefined;
-    }
-
-    // Handle simple transfers with invalid selector like tx:
-    // 0x8bcbdcc1589b5c34c1e55909c8269a411f0267a4fed59a73dd4348cc71addbb9,
-    // which contains 0x00 as data
-    if (key.length !== 10) {
-      return undefined;
-    }
-
-    const fourBytes = key.slice(2);
-    const signatureURL = fourBytesURL(assetsURLPrefix, fourBytes);
-
-    try {
-      const res = await fetch(signatureURL);
-      if (!res.ok) {
-        console.warn(`Signature does not exist in 4bytes DB: ${fourBytes}`);
-        return null;
-      }
-
-      // Get only the first occurrence, for now ignore alternative param names
-      const sigs = await res.text();
-      const sig = sigs.split(";")[0];
-      const cut = sig.indexOf("(");
-      const method = sig.slice(0, cut);
-
-      const entry: FourBytesEntry = {
-        name: method,
-        signature: sig,
-      };
-      return entry;
-    } catch (err) {
-      // Network error or something wrong with URL config;
-      // silence and don't try it again
-      return null;
-    }
+    return undefined;
   };
 
 /**

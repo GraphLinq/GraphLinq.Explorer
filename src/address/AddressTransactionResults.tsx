@@ -136,7 +136,7 @@ const AddressTransactionResults: FC<AddressAwareComponentProps> = ({
             <>
               {page.map((tx) => (
                 <TransactionItem
-                  key={tx.hash}
+                  key={`${tx.from}-${tx.hash}`}
                   tx={tx}
                   selectedAddress={address}
                   feeDisplay={feeDisplay}

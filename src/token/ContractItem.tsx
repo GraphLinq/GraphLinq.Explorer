@@ -4,6 +4,7 @@ import BlockLink from "../components/BlockLink";
 import TimestampAge from "../components/TimestampAge";
 import { RuntimeContext } from "../useRuntime";
 import { ContractMatch, useBlockData } from "../useErigonHooks";
+import { useConfig } from "../useConfig";
 
 type ContractItemProps = {
   m: ContractMatch;
@@ -12,8 +13,8 @@ type ContractItemProps = {
 const ContractItem: FC<ContractItemProps> = ({
   m: { address, blockNumber },
 }) => {
-  const { provider } = useContext(RuntimeContext);
-  const block = useBlockData(provider, blockNumber.toString());
+  const { provider, config } = useContext(RuntimeContext);
+  const block = useBlockData(provider, config, blockNumber.toString());
 
   return (
     <tr>

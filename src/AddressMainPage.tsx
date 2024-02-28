@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useContext } from "react";
+import React, { useEffect, useCallback, useContext, useState } from "react";
 import {
   Routes,
   Route,
@@ -94,7 +94,7 @@ const AddressMainPage: React.FC<AddressMainPageProps> = () => {
                     </NavTab>
                   </>
                 )}
-                {hasCode && (
+                {/* {hasCode && (
                   <NavTab href={`/address/${addressOrName}/contract`}>
                     <span
                       className={`flex items-baseline space-x-2 ${match === undefined ? "italic opacity-50" : ""
@@ -119,7 +119,7 @@ const AddressMainPage: React.FC<AddressMainPageProps> = () => {
                       )}
                     </span>
                   </NavTab>
-                )}
+                )} */}
               </Tab.List>
               <Tab.Panels>
                 <Routes>

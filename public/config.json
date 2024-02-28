@@ -1,7 +1,7 @@
 {
   "chainURL": "https://glq-dataseed.graphlinq.io",
   "beaconAPI": "https://glq-dataseed.graphlinq.io",
-  "assetsURLPrefix": "http://localhost:3001",
+  "assetsURLPrefix": "https://glq-dataseed.graphlinq.io",
   "apiURL": "https://api-explorer.graphlinq.io", 
   "coingeckoPriceUrl": "https://api.coingecko.com/api/v3/coins/graphlinq-protocol",
   "experimental": true

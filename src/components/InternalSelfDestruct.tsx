@@ -19,8 +19,8 @@ const InternalSelfDestruct: React.FC<InternalSelfDestructProps> = ({
   txData,
   internalOp,
 }) => {
-  const { provider } = useContext(RuntimeContext);
-  const block = useBlockDataFromTransaction(provider, txData);
+  const { provider, config } = useContext(RuntimeContext);
+  const block = useBlockDataFromTransaction(provider, config, txData);
   const {
     nativeCurrency: { symbol },
   } = useChainInfo();

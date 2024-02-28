@@ -10,16 +10,17 @@ type AddressAttributesProps = AddressAwareComponentProps & {
 
 const AddressAttributes: FC<AddressAttributesProps> = ({ address, full }) => {
   const { provider } = useContext(RuntimeContext);
-  const attr = useAddressAttributes(provider, address);
+  // const attr = { erc20: true };
+  // const attr = useAddressAttributes(provider, address);
 
   return (
     <>
-      {attr?.erc20 && (
+      {/* {attr?.erc20 && (
         <AddressLegend full={full} title="ERC20 token" uniqueId="erc20">
           [{full ? "ERC20" : "20"}]
         </AddressLegend>
-      )}
-      {attr?.erc165 && (
+      )} */}
+      {/* {attr?.erc165 && (
         <AddressLegend full={full} title="ERC165 contract" uniqueId="erc165">
           [{full ? "ERC165" : "165"}]
         </AddressLegend>
@@ -33,7 +34,7 @@ const AddressAttributes: FC<AddressAttributesProps> = ({ address, full }) => {
         <AddressLegend full={full} title="ERC1155 token" uniqueId="erc1155">
           [{full ? "ERC1155" : "1155"}]
         </AddressLegend>
-      )}
+      )} */}
     </>
   );
 };

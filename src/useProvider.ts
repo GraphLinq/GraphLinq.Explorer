@@ -18,10 +18,7 @@ export const useProvider = (
 
   if (chainURL !== undefined) {
     if (chainURL === "") {
-      console.info(`Using default rpc URL: ${DEFAULT_ERIGON_URL}`);
       chainURL = DEFAULT_ERIGON_URL;
-    } else {
-      console.log(`Using configured rpc URL: ${chainURL}`);
     }
   }
   // chainURL = DEFAULT_ERIGON_URL;
@@ -37,6 +34,8 @@ export const useProvider = (
 
     const tryToConnect = async () => {
       let provider: JsonRpcProvider;
+
+      console.log(`Connect: ${chainURL}`);
       if (chainURL?.startsWith("ws://") || chainURL?.startsWith("wss://")) {
         provider = new WebSocketProvider(chainURL);
       } else {

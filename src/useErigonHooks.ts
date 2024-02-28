@@ -25,8 +25,6 @@ import {
 import erc20 from "./erc20.json";
 import erc721md from "./erc721metadata.json";
 import { rawToProcessed } from "./search/search";
-import { BlockHeader } from '@ethereumjs/block';
-import { useConfig } from "./useConfig";
 import { ethers } from "ethers";
 
 const TRANSFER_TOPIC =
@@ -56,6 +54,7 @@ const parseBigInt = (str: string, base = 16) => {
 
 export const readBlock = async (
   provider: JsonRpcProvider,
+  config: any,
   blockNumberOrHash: string
 ): Promise<ExtendedBlock | null> => {
   let blockPromise: Promise<any>;
@@ -81,11 +80,13 @@ export const readBlock = async (
   let validator = undefined;
 
   try {
-    let config = useConfig();
     let host = config?.apiURL;
+
     let validatorResult = await fetch(`${host}/get-validator?block-number=${_rawBlock.number}`);
     validator = (await validatorResult.json()).validator;
-  } catch (e) {}
+  } catch (e) {
+    console.log('get-validator', e);
+  }
 
   const extBlock: ExtendedBlock = {
     ..._block,
@@ -171,19 +172,20 @@ export const useBlockTransactions = (
 
 const blockDataFetcher: Fetcher<
   ExtendedBlock | null,
-  [JsonRpcProvider, string]
-> = async ([provider, blockNumberOrHash]) => {
-  return readBlock(provider, blockNumberOrHash);
+  [JsonRpcProvider, any, string]
+> = async ([provider, config, blockNumberOrHash]) => {
+  return readBlock(provider, config, blockNumberOrHash);
 };
 
 // TODO: some callers may use only block headers?
 export const useBlockData = (
   provider: JsonRpcProvider | undefined,
+  config: any,
   blockNumberOrHash: string | undefined
 ): ExtendedBlock | null | undefined => {
   const { data, error } = useSWRImmutable(
     provider !== undefined && blockNumberOrHash !== undefined
-      ? [provider, blockNumberOrHash]
+      ? [provider, config, blockNumberOrHash]
       : null,
     blockDataFetcher
   );
@@ -195,10 +197,12 @@ export const useBlockData = (
 
 export const useBlockDataFromTransaction = (
   provider: JsonRpcProvider | undefined,
+  config: any,
   txData: TransactionData | null | undefined
 ): ExtendedBlock | null | undefined => {
   const block = useBlockData(
     provider,
+    config,
     txData?.confirmedData
       ? txData.confirmedData.blockNumber.toString()
       : undefined
@@ -656,14 +660,23 @@ export const useHasCode = (
   blockTag: BlockTag = "latest"
 ): boolean | undefined => {
   const fetcher = providerFetcher(provider);
+
+  // const response = useSWRImmutable(
+  //   ["eth_blockNumber"],
+  //   fetcher
+  // );
   const { data, error } = useSWRImmutable(
-    ["ots_hasCode", address, blockTag],
+    ["eth_getCode", address, 'latest'],//response.data],
     fetcher
   );
+
   if (error) {
     return undefined;
   }
-  return data as boolean | undefined;
+  if (data === undefined) {
+    return false;
+  }
+  return data !== '0x';
 };
 
 const ERC20_PROTOTYPE = new Contract(AddressZero, erc20);

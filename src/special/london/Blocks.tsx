@@ -35,6 +35,7 @@ import {
   gasChartOptions,
   gasChartData,
 } from "./chart";
+import { useConfig } from "../../useConfig";
 
 ChartJS.register(
   LinearScale,
@@ -58,6 +59,7 @@ const Blocks: React.FC<BlocksProps> = ({ latestBlock, targetBlockNumber }) => {
   const { provider } = useContext(RuntimeContext);
   const [blocks, setBlocks] = useState<ExtendedBlock[]>([]);
   const [toggleChart, setToggleChart] = useState<boolean>(true);
+  const config = useConfig();
 
   const addBlock = useCallback(
     async (blockNumber: number) => {
@@ -70,7 +72,7 @@ const Blocks: React.FC<BlocksProps> = ({ latestBlock, targetBlockNumber }) => {
         return;
       }
 
-      const extBlock = await readBlock(provider, blockNumber.toString());
+      const extBlock = await readBlock(provider, config, blockNumber.toString());
       setBlocks((_blocks) => {
         if (_blocks.length > 0 && blockNumber === _blocks[0].number) {
           return _blocks;

@@ -21,15 +21,6 @@
   "tokens": [
     {
       "chainId": 614,
-      "address": "0x806a6aE0E70fc55eB16605a64BEfe887ce05c435",
-      "symbol": "WGLQTEST",
-      "name": "WGLQTEST",
-      "decimals": 18,
-      "logoURI": "ipfs://QmWwmuySmabFF2E2jtzeRxbgKK6yPjHEJj4qd54kEY3RAh",
-      "tags": []
-    },
-    {
-      "chainId": 614,
       "address": "0xEB567ec41738c2bAb2599A1070FC5B727721b3B6",
       "symbol": "WGLQ",
       "name": "Wrapped GLQ",

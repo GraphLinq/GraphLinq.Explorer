@@ -26,6 +26,7 @@ import { blockTxsURL } from "./url";
 import { useBlockData } from "./useErigonHooks";
 import { useChainInfo } from "./useChainInfo";
 import Loader from "./components/Loader";
+import { useConfig } from "./useConfig";
 
 const parseBigInt = (str: string, base = 16) => {
   let strN = str.replace('0x', '');
@@ -41,6 +42,7 @@ const parseBigInt = (str: string, base = 16) => {
 const Block: React.FC = () => {
   const { provider } = useContext(RuntimeContext);
   const { blockNumberOrHash } = useParams();
+  const config = useConfig();
   if (blockNumberOrHash === undefined) {
     throw new Error("blockNumberOrHash couldn't be undefined here");
   }
@@ -48,7 +50,7 @@ const Block: React.FC = () => {
     nativeCurrency: { name, symbol },
   } = useChainInfo();
 
-  const block = useBlockData(provider, blockNumberOrHash);
+  const block = useBlockData(provider, config, blockNumberOrHash);
   useEffect(() => {
     if (block !== undefined) {
       document.title = `Block #${blockNumberOrHash} | GraphLinq Explorer`;

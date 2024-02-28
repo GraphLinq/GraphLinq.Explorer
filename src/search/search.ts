@@ -17,7 +17,7 @@ import { useConfig } from "../useConfig";
 export const rawToProcessed = (provider: JsonRpcProvider, _rawRes: any) => {
   const _res: TransactionResponse[] = [];
 
-  _rawRes.txs.forEach((x: any) => {
+  _rawRes.txs.filter((x: any) => x.hash !== undefined).forEach((x: any) => {
     const tx =  provider.formatter.transactionResponse(x)
     tx.timestamp = x.timestamp;
     _res.push(tx)

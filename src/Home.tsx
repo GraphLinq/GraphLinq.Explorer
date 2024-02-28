@@ -159,7 +159,7 @@ const Home: FC = () => {
         let direction: Direction | undefined;
         direction = Direction.OUT;
         return (
-          <BlockNumberContext.Provider value={tx.blockNumber}>
+          <BlockNumberContext.Provider key={tx.hash} value={tx.blockNumber}>
             <div
               className={`grid grid-cols-12 gap-x-4 text-sm ${
                   "hover:bg-skin-table-hover"

@@ -31,13 +31,13 @@ export const useConfig = (): OtterscanConfig | undefined => {
     return _config;
   }, [data]);
 
-  useEffect(() => {
-    if (data === undefined) {
-      return;
-    }
-    console.info("Loaded app config");
-    console.info(config);
-  }, [config]);
+  // useEffect(() => {
+  //   if (data === undefined) {
+  //     return;
+  //   }
+  //   console.info("Loaded app config");
+  //   console.info(config);
+  // }, [config]);
 
   return config;
 };

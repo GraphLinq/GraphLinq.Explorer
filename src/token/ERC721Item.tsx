@@ -15,9 +15,9 @@ type ERC721ItemProps = {
 };
 
 const ERC721Item: FC<ERC721ItemProps> = ({ m: { address, blockNumber } }) => {
-  const { provider } = useContext(RuntimeContext);
+  const { provider, config } = useContext(RuntimeContext);
   const erc721Meta = useERC721Metadata(provider, address, blockNumber);
-  const block = useBlockData(provider, blockNumber.toString());
+  const block = useBlockData(provider, config, blockNumber.toString());
 
   return (
     <tr>
